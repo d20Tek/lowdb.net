@@ -3,8 +3,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 namespace D20Tek.LowDb;
 
-public interface IFileAdapterAsync
-    <T>
+public interface IFileAdapterAsync<T>
     where T : class
 {
     Task<T?> Read();

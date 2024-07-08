@@ -7,44 +7,45 @@ public class LowDb<T>
     where T : class, new()
 {
     private readonly IFileAdapter<T> _fileAdapter;
-    private T? _data;
+    private T _data;
+    private bool isLoaded = false;
 
     public LowDb(IFileAdapter<T> fileAdapter, T? data = null)
     {
         _fileAdapter = fileAdapter;
-        _data = data;
+        _data = data ?? new();
     }
 
     public void Read()
     {
         var data = _fileAdapter.Read();
-        _data = data;
+        _data = data ?? new T();
     }
 
     public void Write()
     {
-        _fileAdapter.Write(_data ?? new());
+        _fileAdapter.Write(_data);
     }
 
-    public T? Get()
+    public T Get()
     {
-        if (_data is null)
-        {
-            Read();
-        }
-
+        EnsureDatabaseLoaded();
         return _data;
     }
 
     public void Update(Action<T> updateAction)
     {
-        if (_data is null)
+        EnsureDatabaseLoaded();
+        updateAction(_data);
+        Write();
+    }
+
+    private void EnsureDatabaseLoaded()
+    {
+        if (isLoaded is false)
         {
             Read();
-            _data ??= new T();
+            isLoaded = true;
         }
-
-        updateAction(_data!);
-        Write();
     }
 }

@@ -23,7 +23,7 @@ public class LowDbAsyncTests
         var result = await db.Get();
 
         // assert
-        result.Should().BeNull();
+        result.Entities.Should().BeEmpty();
     }
 
     [TestMethod]

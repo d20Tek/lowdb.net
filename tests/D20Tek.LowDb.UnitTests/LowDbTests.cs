@@ -23,7 +23,7 @@ public class LowDbTests
         var result = db.Get();
 
         // assert
-        result.Should().BeNull();
+        result.Entities.Should().BeEmpty();
     }
 
     [TestMethod]
