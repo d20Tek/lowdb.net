@@ -23,10 +23,17 @@ public class LowDbAsync<T>
 
     public async Task Write()
     {
-        if (_data is not null)
+        await _fileAdapter.Write(_data ?? new());
+    }
+
+    public async Task<T?> Get()
+    {
+        if (_data is null)
         {
-            await _fileAdapter.Write(_data);
+            await Read();
         }
+
+        return _data;
     }
 
     public async Task Update(Action<T> updateAction)
@@ -34,11 +41,7 @@ public class LowDbAsync<T>
         if (_data is null)
         {
             await Read();
-        }
-
-        if (_data is null)
-        {
-            throw new InvalidOperationException("Attempting to perform operation on a null database member.");
+            _data ??= new T();
         }
 
         updateAction(_data!);

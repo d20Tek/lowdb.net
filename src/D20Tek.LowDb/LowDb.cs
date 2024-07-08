@@ -41,13 +41,10 @@ public class LowDb<T>
         if (_data is null)
         {
             Read();
-            if (_data is null)
-            {
-                _data = new T();
-            }
+            _data ??= new T();
         }
 
-        updateAction(_data);
+        updateAction(_data!);
         Write();
     }
 }

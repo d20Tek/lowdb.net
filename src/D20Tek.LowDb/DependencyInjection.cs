@@ -14,4 +14,11 @@ public static class DependencyInjection
         services.AddScoped(typeof(LowDb<T>), sp => new LowDb<T>(new JsonFileAdapter<T>(filename)));
         return services;
     }
+
+    public static IServiceCollection AddLowDbAsync<T>(this IServiceCollection services, string filename)
+        where T : class, new()
+    {
+        services.AddScoped(typeof(LowDbAsync<T>), sp => new LowDbAsync<T>(new JsonFileAdapterAsync<T>(filename)));
+        return services;
+    }
 }

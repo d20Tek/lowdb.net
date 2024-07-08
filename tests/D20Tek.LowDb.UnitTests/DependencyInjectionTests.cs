@@ -30,4 +30,25 @@ public class DependencyInjectionTests
         var lowdb = provider.GetService<LowDb<TestDocument>>();
         lowdb.Should().NotBeNull();
     }
+
+    [TestMethod]
+    public void AddLowDbAsync_AddsDbAndJsonFileAdapter()
+    {
+        // arrange
+        var filename = Path.GetTempFileName();
+        var services = new ServiceCollection();
+
+        // act
+        services.AddLowDbAsync<TestDocument>(filename);
+
+        // assert
+        services.Any(x => x.ServiceType == typeof(LowDbAsync<TestDocument>)).Should().BeTrue();
+
+        // act on service provider
+        var provider = services.BuildServiceProvider();
+
+        // assert
+        var lowdb = provider.GetService<LowDbAsync<TestDocument>>();
+        lowdb.Should().NotBeNull();
+    }
 }
