@@ -7,13 +7,15 @@ namespace Sample.Cli;
 
 class Program
 {
-    private static LowDb<TasksDocument> db = LowDbFactory.CreateJsonLowDb<TasksDocument>("my-tasks.json");
+    private static LowDb<TasksDocument> db;
 
     static void Main(string[] args)
     {
         Console.WriteLine("Welcome to Task Cli!");
         Console.WriteLine("====================");
         Console.WriteLine();
+
+        InitializeDatabase(args);
 
         while (true)
         {
@@ -41,6 +43,22 @@ class Program
                     break;
             }
         }
+    }
+
+    static void InitializeDatabase(string[] args)
+    {
+        db = LowDbFactory.CreateLowDb<TasksDocument>(b =>
+        {
+            if (args.Any(x => x.Equals("--in-memory", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                Console.WriteLine("Running in-memory database mode.");
+                b.WithInMemoryDb();
+            }
+            else
+            {
+                b.WithFilename("my-tasks.json");
+            }
+        });
     }
 
     static void CreateTask()

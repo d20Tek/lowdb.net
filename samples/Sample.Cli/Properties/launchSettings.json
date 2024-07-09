@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Sample.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    }
+  }
+}
