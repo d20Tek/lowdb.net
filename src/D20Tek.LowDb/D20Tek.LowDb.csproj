@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>LowDb.Net</PackageId>
+    <Title>LowDb for .Net</Title>
+    <Version>1.0.1</Version>
+    <Company>d20Tek</Company>
+    <Description>A .NET implementation of the LowDB file-based database for use in applications and experiments that only require a minimal database implementation. Supports JSON-based database file formats.</Description>
+    <Copyright>Copyright (c) d20Tek.  All rights reserved.</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/d20Tek/lowdb.net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/d20Tek/lowdb.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>LowDb; file-based database; data files</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+  </ItemGroup>
+
+</Project>
