@@ -24,6 +24,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Include="..\..\ReleaseNotes.md" Link="ReleaseNotes.md" />
   </ItemGroup>
 
   <ItemGroup>

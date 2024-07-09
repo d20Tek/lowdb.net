@@ -33,11 +33,15 @@ public class LowDbAsync<T>
         return _data;
     }
 
-    public async Task Update(Action<T> updateAction)
+    public async Task Update(Action<T> updateAction, bool autoSave = true)
     {
         await EnsureDatabaseLoaded();
         updateAction(_data);
-        await Write();
+
+        if (autoSave is true)
+        {
+            await Write();
+        }
     }
 
     private async Task EnsureDatabaseLoaded()
