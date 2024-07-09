@@ -7,7 +7,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>LowDb.Net</PackageId>
     <Title>LowDb for .Net</Title>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
     <Company>d20Tek</Company>
     <Description>A .NET implementation of the LowDB file-based database for use in applications and experiments that only require a minimal database implementation. Supports JSON-based database file formats.</Description>
     <Copyright>Copyright (c) d20Tek.  All rights reserved.</Copyright>
@@ -16,6 +16,7 @@
     <RepositoryUrl>https://github.com/d20Tek/lowdb.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>LowDb; file-based database; data files</PackageTags>
+    <PackageReleaseNotes>Please find the detailed release notes at https://github.com/d20Tek/lowdb.net/ReleaseNotes.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

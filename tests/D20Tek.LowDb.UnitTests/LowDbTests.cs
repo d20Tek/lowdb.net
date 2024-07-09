@@ -45,7 +45,6 @@ public class LowDbTests
         // arrange
         var jsonAdapter = new JsonFileAdapter<TestDocument>("update-test-file.json");
         var db = new LowDb<TestDocument>(jsonAdapter);
-        db.Write();
 
         var id = -1;
 
@@ -147,5 +146,35 @@ public class LowDbTests
         // assert
         result.Should().NotBeNull();
         result!.Entities.Any(x => x.Id == id).Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void UpdateListType_WithChanges_SavesFile()
+    {
+        // arrange
+        var jsonAdapter = new JsonFileAdapter<List<TestEntity>>("update-list-test-file.json");
+        var db = new LowDb<List<TestEntity>>(jsonAdapter);
+
+        var id = -1;
+
+        // act
+        db.Update(x =>
+        {
+            id = Guid.NewGuid().GetHashCode();
+            x.Add(new TestEntity
+            {
+                Id = id,
+                Name = "Test entity",
+                Description = "test desc.",
+                Flag = true
+            });
+        });
+
+        db.Read();
+        var result = db.Get();
+
+        // assert
+        result.Should().NotBeNull();
+        result.Any(x => x.Id == id).Should().BeTrue();
     }
 }

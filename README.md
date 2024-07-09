@@ -6,7 +6,7 @@ This library is inspired by the [lowdb Javascript package](https://github.com/ty
 ## Installation
 This library is a NuGet package so it is easy to add to your project. To install the package into your solution, you can use the NuGet Package Manager. In PM, please use the following command:
 ```  
-PM > Install-Package LowDb.Net -Version 1.0.1
+PM > Install-Package LowDb.Net -Version 1.0.3
 ``` 
 
 To install in the Visual Studio UI, go to the Tools menu > "Manage NuGet Packages". Then search for LowDb.Net, and install the package from there.
