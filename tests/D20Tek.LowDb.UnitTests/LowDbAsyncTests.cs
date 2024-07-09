@@ -123,7 +123,7 @@ public class LowDbAsyncTests
     public async Task Update_WithMemoryAdapter_SavesData()
     {
         // arrange
-        var jsonAdapter = new MemoryAdapterAsync<TestDocument>();
+        var jsonAdapter = new MemoryStorageAdapterAsync<TestDocument>();
         var db = new LowDbAsync<TestDocument>(jsonAdapter);
 
         var id = -1;

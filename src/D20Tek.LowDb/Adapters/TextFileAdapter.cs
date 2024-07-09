@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 namespace D20Tek.LowDb.Adapters;
 
-public class TextFileAdapter : IFileAdapter<string>
+public class TextFileAdapter : IStorageAdapter<string>
 {
     private readonly string _filename;
 

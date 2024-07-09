@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 namespace D20Tek.LowDb.Adapters;
 
-public class MemoryAdapter<T> : IFileAdapter<T>
+public class MemoryStorageAdapter<T> : IStorageAdapter<T>
     where T : class
 {
     private T? _data = null;

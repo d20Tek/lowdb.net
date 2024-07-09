@@ -1,12 +1,21 @@
 ﻿//---------------------------------------------------------------------------------------------------------------------
 // Copyright (c) d20Tek.  All rights reserved.
 //---------------------------------------------------------------------------------------------------------------------
-namespace D20Tek.LowDb;
+namespace D20Tek.LowDb.Adapters;
 
-public interface IFileAdapter<T>
+public class MemoryStorageAdapterAsync<T> : IStorageAdapterAsync<T>
     where T : class
 {
-    T? Read();
+    private T? _data = null;
 
-    void Write(T data);
+    public Task<T?> Read()
+    {
+        return Task.FromResult(_data);
+    }
+
+    public Task Write(T data)
+    {
+        _data = data;
+        return Task.CompletedTask;
+    }
 }

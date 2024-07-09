@@ -3,10 +3,10 @@
 //---------------------------------------------------------------------------------------------------------------------
 namespace D20Tek.LowDb;
 
-public interface IFileAdapterAsync<T>
+public interface IStorageAdapter<T>
     where T : class
 {
-    Task<T?> Read();
+    T? Read();
 
-    Task Write(T data);
+    void Write(T data);
 }

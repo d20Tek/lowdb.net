@@ -123,7 +123,7 @@ public class LowDbTests
     public void Update_WithMemoryAdapter_SavesData()
     {
         // arrange
-        var jsonAdapter = new MemoryAdapter<TestDocument>();
+        var jsonAdapter = new MemoryStorageAdapter<TestDocument>();
         var db = new LowDb<TestDocument>(jsonAdapter);
 
         var id = -1;

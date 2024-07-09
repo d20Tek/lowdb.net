@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace D20Tek.LowDb.Adapters;
 
-public class JsonFileAdapterAsync<T> : IFileAdapterAsync<T>
+public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T>
     where T : class
 {
     private readonly string filename;
