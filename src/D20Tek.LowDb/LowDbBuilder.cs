@@ -14,10 +14,16 @@ public class LowDbBuilder
 
     public ServiceLifetime ServiceLifetime { get; private set; } = ServiceLifetime.Singleton;
 
-    public LowDbBuilder WithFilename(string filename)
+    public LowDbBuilder UseFileDatabase(string filename)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(filename, nameof(filename));
         _filename = filename;
+        return this;
+    }
+
+    public LowDbBuilder UseInMemoryDatabase()
+    {
+        _useMemoryAdapter = true;
         return this;
     }
 
@@ -25,12 +31,6 @@ public class LowDbBuilder
     {
         ArgumentNullException.ThrowIfNullOrEmpty(folderName, nameof(folderName));
         _folder = folderName;
-        return this;
-    }
-
-    public LowDbBuilder WithInMemoryDb()
-    {
-        _useMemoryAdapter = true;
         return this;
     }
 

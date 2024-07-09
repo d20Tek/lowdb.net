@@ -40,7 +40,7 @@ public class DependencyInjectionTests
 
         // act
         services.AddLowDb<TestDocument>(b =>
-            b.WithFilename(filename)
+            b.UseFileDatabase(filename)
              .WithFolder("test-folder")
              .WithLifetime(ServiceLifetime.Scoped));
 
@@ -64,8 +64,8 @@ public class DependencyInjectionTests
 
         // act
         services.AddLowDb<TestDocument>(b =>
-            b.WithFilename(filename)
-             .WithInMemoryDb());
+            b.UseFileDatabase(filename)
+             .UseInMemoryDatabase());
 
         // assert
         services.Any(x => x.ServiceType == typeof(LowDb<TestDocument>)).Should().BeTrue();
@@ -108,7 +108,7 @@ public class DependencyInjectionTests
 
         // act
         services.AddLowDbAsync<TestDocument>(b =>
-            b.WithFilename(filename)
+            b.UseFileDatabase(filename)
              .WithLifetime(ServiceLifetime.Scoped));
 
         // assert
@@ -131,7 +131,7 @@ public class DependencyInjectionTests
 
         // act
         services.AddLowDbAsync<TestDocument>(b =>
-            b.WithInMemoryDb());
+            b.UseInMemoryDatabase());
 
         // assert
         services.Any(x => x.ServiceType == typeof(LowDbAsync<TestDocument>)).Should().BeTrue();

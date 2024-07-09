@@ -29,7 +29,7 @@ public class LowDbFactoryTests
 
         // act
         var db = LowDbFactory.CreateLowDb<TestDocument>(b =>
-                b.WithFilename("test.json"));
+                b.UseFileDatabase("test.json"));
 
         // assert
         db.Should().NotBeNull();
@@ -43,7 +43,7 @@ public class LowDbFactoryTests
 
         // act
         var db = LowDbFactory.CreateLowDb<TestDocument>(b =>
-                b.WithInMemoryDb());
+                b.UseInMemoryDatabase());
 
         // assert
         db.Should().NotBeNull();
@@ -71,7 +71,7 @@ public class LowDbFactoryTests
 
         // act
         var db = LowDbFactory.CreateLowDbAsync<TestDocument>(b =>
-                b.WithFilename("test.json")
+                b.UseFileDatabase("test.json")
                  .WithFolder("test-folder"));
 
         // assert
@@ -87,7 +87,7 @@ public class LowDbFactoryTests
 
         // act
         var db = LowDbFactory.CreateLowDbAsync<TestDocument>(b =>
-                b.WithInMemoryDb());
+                b.UseInMemoryDatabase());
 
         // assert
         db.Should().NotBeNull();

@@ -52,11 +52,11 @@ class Program
             if (args.Any(x => x.Equals("--in-memory", StringComparison.InvariantCultureIgnoreCase)))
             {
                 Console.WriteLine("Running in-memory database mode.");
-                b.WithInMemoryDb();
+                b.UseInMemoryDatabase();
             }
             else
             {
-                b.WithFilename("my-tasks.json");
+                b.UseFileDatabase("my-tasks.json");
             }
         });
     }
