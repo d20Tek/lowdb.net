@@ -2,39 +2,43 @@
 // Copyright (c) d20Tek.  All rights reserved.
 //---------------------------------------------------------------------------------------------------------------------
 using D20Tek.LowDb;
+using Sample.AsyncCli;
 
 namespace Sample.Cli;
 
 class Program
 {
-    private static LowDb<TasksDocument> db = LowDbFactory.CreateJsonLowDb<TasksDocument>("my-tasks.json");
+    private static LowDbAsync<TasksDocument> db = LowDbFactory.CreateJsonLowDbAsync<TasksDocument>("my-async-tasks.json");
 
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
-        Console.WriteLine("Welcome to Task Cli!");
-        Console.WriteLine("====================");
+        Console.WriteLine("Welcome to Task Async Cli!");
+        Console.WriteLine("==========================");
         Console.WriteLine();
 
         ReplaceWithInMemoryDatabase(args);
 
         while (true)
         {
-            Console.Write("Enter command (create, read, update, delete, exit): ");
+            Console.Write("Enter command (create, read, update, disable, enable, exit): ");
             var command = Console.ReadLine()?.ToLower();
 
             switch (command)
             {
                 case "create":
-                    CreateTask();
+                    await CreateTask();
                     break;
                 case "read":
-                    ReadTasks();
+                    await ReadTasks();
                     break;
                 case "update":
-                    UpdateTask();
+                    await UpdateTask();
                     break;
-                case "delete":
-                    DeleteTask();
+                case "enable":
+                    await EnableTask();
+                    break;
+                case "disable":
+                    await DisableTask();
                     break;
                 case "exit":
                     return;
@@ -49,7 +53,7 @@ class Program
     {
         if (args.Any(x => x.Equals("--in-memory", StringComparison.InvariantCultureIgnoreCase)))
         {
-            db = LowDbFactory.CreateLowDb<TasksDocument>(b =>
+            db = LowDbFactory.CreateLowDbAsync<TasksDocument>(b =>
             {
                 Console.WriteLine("Running in-memory database mode.");
                 b.UseInMemoryDatabase();
@@ -57,7 +61,7 @@ class Program
         }
     }
 
-    static void CreateTask()
+    static async Task CreateTask()
     {
         Console.Write("Enter task name: ");
         var name = Console.ReadLine();
@@ -67,7 +71,7 @@ class Program
             return;
         }
 
-        db.Update(x => x.Tasks.Add(
+        await db.Update(x => x.Tasks.Add(
             new TaskEntity
             {
                 Id = x.GetNextId(),
@@ -78,9 +82,9 @@ class Program
         Console.WriteLine("Task created successfully.");
     }
 
-    static void ReadTasks()
+    static async Task ReadTasks()
     {
-        var taskDoc = db.Get();
+        var taskDoc = await db.Get();
         if (taskDoc.Tasks.Count == 0)
         {
             Console.WriteLine("No tasks found.");
@@ -93,7 +97,7 @@ class Program
         }
     }
 
-    static void UpdateTask()
+    static async Task UpdateTask()
     {
         Console.Write("Enter task id to update: ");
         if (!int.TryParse(Console.ReadLine(), out int id))
@@ -102,7 +106,7 @@ class Program
             return;
         }
 
-        db.Update(x =>
+        await db.Update(x =>
         {
             var task = x.Tasks.FirstOrDefault(t => t.Id == id);
             if (task == null)
@@ -133,16 +137,16 @@ class Program
         Console.WriteLine("Task updated successfully.");
     }
 
-    static void DeleteTask()
+    static async Task DisableTask()
     {
-        Console.Write("Enter task id to delete: ");
+        Console.Write("Enter task id to disable: ");
         if (!int.TryParse(Console.ReadLine(), out int id))
         {
             Console.WriteLine("Invalid id.");
             return;
         }
 
-        db.Update(x =>
+        await db.Update(x =>
         {
             var task = x.Tasks.FirstOrDefault(t => t.Id == id);
             if (task == null)
@@ -151,9 +155,33 @@ class Program
                 return;
             }
 
-            x.Tasks.Remove(task);
+            task.State = EntityState.Inactive;
         });
 
-        Console.WriteLine("Task deleted successfully.");
+        Console.WriteLine("Task disabled successfully.");
+    }
+
+    static async Task EnableTask()
+    {
+        Console.Write("Enter task id to enable: ");
+        if (!int.TryParse(Console.ReadLine(), out int id))
+        {
+            Console.WriteLine("Invalid id.");
+            return;
+        }
+
+        await db.Update(x =>
+        {
+            var task = x.Tasks.FirstOrDefault(t => t.Id == id);
+            if (task == null)
+            {
+                Console.WriteLine("Task not found.");
+                return;
+            }
+
+            task.State = EntityState.Active;
+        });
+
+        Console.WriteLine("Task enabled successfully.");
     }
 }

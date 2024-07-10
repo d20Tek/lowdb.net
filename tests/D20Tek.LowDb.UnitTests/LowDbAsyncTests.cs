@@ -148,4 +148,59 @@ public class LowDbAsyncTests
         result.Should().NotBeNull();
         result!.Entities.Any(x => x.Id == id).Should().BeTrue();
     }
+
+    [TestMethod]
+    public async Task Update_WithAutoSaveFalse_DoesNotSaveFile()
+    {
+        // arrange
+        var jsonAdapter = new JsonFileAdapterAsync<List<Guid>>("async-nonautosave-test-file.json");
+        var db = new LowDbAsync<List<Guid>>(jsonAdapter);
+
+        Guid guid = Guid.Empty;
+
+        // act
+        await db.Update(x =>
+        {
+            guid = Guid.NewGuid();
+            x.Add(guid);
+        },
+        false);
+
+        await db.Read();
+        var result = await db.Get();
+
+        // assert
+        result.Should().NotBeNull();
+        result.Any().Should().BeFalse();
+    }
+
+    [TestMethod]
+    public async Task Update_BatchMultipleChanges_SavesFile()
+    {
+        // arrange
+        var jsonAdapter = new JsonFileAdapterAsync<List<Guid>>("async-batch-test-file.json");
+        var db = new LowDbAsync<List<Guid>>(jsonAdapter);
+
+        List<Guid> expected = new();
+
+        // act
+        await db.Update(x =>
+        {
+            var guid = Guid.NewGuid();
+            expected.Add(guid);
+            x.Add(guid);
+        },
+        false);
+
+        // delayed save.
+        await db.Write();
+
+        // force a reload from file.
+        await db.Read();
+        var result = await db.Get();
+
+        // assert
+        result.Should().NotBeNull();
+        result.Should().Contain(expected);
+    }
 }

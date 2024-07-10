@@ -1,18 +1,15 @@
 ﻿//---------------------------------------------------------------------------------------------------------------------
 // Copyright (c) d20Tek.  All rights reserved.
 //---------------------------------------------------------------------------------------------------------------------
-namespace Sample.Cli;
+namespace Sample.AsyncCli;
 
-internal class TaskEntity
+internal class TasksDocument
 {
-    public int Id { get; set; }
+    public int LastId { get; set; } = 0;
 
-    public string Name { get; set; } = "";
-    
-    public bool IsCompleted { get; set; }
+    public string Version { get; set; } = "1.0";
 
-    public override string ToString()
-    {
-        return $"Id: {Id}, Name: {Name}, IsCompleted: {IsCompleted}";
-    }
+    public HashSet<TaskEntity> Tasks { get; init; } = [];
+
+    public int GetNextId() => ++LastId;
 }

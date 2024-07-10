@@ -1,7 +1,7 @@
 ﻿//---------------------------------------------------------------------------------------------------------------------
 // Copyright (c) d20Tek.  All rights reserved.
 //---------------------------------------------------------------------------------------------------------------------
-namespace Sample.Cli;
+namespace Sample.AsyncCli;
 
 internal class TaskEntity
 {
@@ -11,8 +11,17 @@ internal class TaskEntity
     
     public bool IsCompleted { get; set; }
 
+    public EntityState State { get; set; } = EntityState.Active;
+
     public override string ToString()
     {
-        return $"Id: {Id}, Name: {Name}, IsCompleted: {IsCompleted}";
+        return $"Id: {Id}, Name: {Name}, IsCompleted: {IsCompleted}, State: {State}";
     }
+}
+
+public enum EntityState
+{
+    Active,
+    Inactive,
+    Completed
 }

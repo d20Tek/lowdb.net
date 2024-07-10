@@ -33,11 +33,15 @@ public class LowDb<T>
         return _data;
     }
 
-    public void Update(Action<T> updateAction)
+    public void Update(Action<T> updateAction, bool autoSave = true)
     {
         EnsureDatabaseLoaded();
         updateAction(_data);
-        Write();
+
+        if (autoSave is true)
+        {
+            Write();
+        }
     }
 
     private void EnsureDatabaseLoaded()

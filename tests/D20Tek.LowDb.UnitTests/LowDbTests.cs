@@ -45,7 +45,6 @@ public class LowDbTests
         // arrange
         var jsonAdapter = new JsonFileAdapter<TestDocument>("update-test-file.json");
         var db = new LowDb<TestDocument>(jsonAdapter);
-        db.Write();
 
         var id = -1;
 
@@ -147,5 +146,104 @@ public class LowDbTests
         // assert
         result.Should().NotBeNull();
         result!.Entities.Any(x => x.Id == id).Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void UpdateListType_WithChanges_SavesFile()
+    {
+        // arrange
+        var jsonAdapter = new JsonFileAdapter<List<TestEntity>>("update-list-test-file.json");
+        var db = new LowDb<List<TestEntity>>(jsonAdapter);
+
+        var id = -1;
+
+        // act
+        db.Update(x =>
+        {
+            id = Guid.NewGuid().GetHashCode();
+            x.Add(new TestEntity
+            {
+                Id = id,
+                Name = "Test entity",
+                Description = "test desc.",
+                Flag = true
+            });
+        });
+
+        db.Read();
+        var result = db.Get();
+
+        // assert
+        result.Should().NotBeNull();
+        result.Any(x => x.Id == id).Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void Update_WithAutoSaveFalse_DoesNotSaveFile()
+    {
+        // arrange
+        var jsonAdapter = new JsonFileAdapter<List<Guid>>("nonautosave-test-file.json");
+        var db = new LowDb<List<Guid>>(jsonAdapter);
+
+        Guid guid = Guid.Empty;
+
+        // act
+        db.Update(x =>
+        {
+            guid = Guid.NewGuid();
+            x.Add(guid);
+        },
+        false);
+
+        db.Read();
+        var result = db.Get();
+
+        // assert
+        result.Should().NotBeNull();
+        result.Any().Should().BeFalse();
+    }
+
+    [TestMethod]
+    public void Update_BatchMultipleChanges_SavesFile()
+    {
+        // arrange
+        var jsonAdapter = new JsonFileAdapter<List<Guid>>("batch-test-file.json");
+        var db = new LowDb<List<Guid>>(jsonAdapter);
+
+        List<Guid> expected = new();
+
+        // act
+        db.Update(x =>
+        {
+            var guid = Guid.NewGuid();
+            expected.Add(guid);
+            x.Add(guid);
+        },
+        false);
+        db.Update(x =>
+        {
+            var guid = Guid.NewGuid();
+            expected.Add(guid);
+            x.Add(guid);
+        },
+        false);
+        db.Update(x =>
+        {
+            var guid = Guid.NewGuid();
+            expected.Add(guid);
+            x.Add(guid);
+        },
+        false);
+
+        // delayed save.
+        db.Write();
+
+        // force a reload from file.
+        db.Read();
+        var result = db.Get();
+
+        // assert
+        result.Should().NotBeNull();
+        result.Should().Contain(expected);
     }
 }
