@@ -103,6 +103,7 @@ For the full implementation of this console application, please see the Sample.C
 ## Samples
 For more detailed examples on how to use LowDb.Net, please review the following samples:
 
+* [Sample.AsyncCli](samples/Sample.AsyncCli) - Console application for managing a task list and persisting a local file. Uses the LowDbAsync class and reads/writes files asynchronously.
 * [Sample.Cli](samples/Sample.Cli) - Console application for managing a task list and persisting a local file. Include the ability to run the app with an in-memory database instead.
 * [Sample.WebApi](samples/Sample.WebApi) - Minimal WebApi project that exposes a TaskList web service with CRUD operations on a shared data file. All users have access to the same database file.
 
