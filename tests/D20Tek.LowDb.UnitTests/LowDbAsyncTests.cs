@@ -208,6 +208,7 @@ public class LowDbAsyncTests
         },
         false);
 
+        await Task.Delay(300);
         await Task.WhenAll(task1, task2, task3);
 
         // delayed save.
