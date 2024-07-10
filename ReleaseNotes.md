@@ -7,6 +7,7 @@ Minor updates to the initial LowDb.Net release
 - Added Release Notes document to repository and link to nuget package definition.
 - Added unit tests to verify using list of entities in addition to root document.
 - Added optional autoSave parameter to Update method to control whether changes are persisted with every update.
+- Added Sample.AsyncCli to show usage of LowDbAsync.
 
 ## Release 1.0.1
 Initial lowdb file-based database
