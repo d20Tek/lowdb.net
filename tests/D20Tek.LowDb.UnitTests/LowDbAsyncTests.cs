@@ -203,4 +203,31 @@ public class LowDbAsyncTests
         result.Should().NotBeNull();
         result.Should().Contain(expected);
     }
+
+    [TestMethod]
+    public async Task Get_WithDataInitialization_ReturnsDocument()
+    {
+        // arrange
+        var document = new TestDocument
+        {
+            LastId = 3,
+            Version = "1.0",
+            Entities =
+            [
+                new TestEntity { Id = 1, Name = "Test 1", Description = "desc 1" },
+                new TestEntity { Id = 2, Name = "Test 2", Description = "desc 2" },
+                new TestEntity { Id = 3, Name = "Test 3", Description = "desc 3" },
+            ]
+        };
+
+        var adapter = new MemoryStorageAdapterAsync<TestDocument>();
+        var db = new LowDbAsync<TestDocument>(adapter, document);
+
+        // act
+        var result = await db.Get();
+
+        // assert
+        result.Entities.Should().NotBeEmpty();
+        result.Entities.Any(x => x.Id == 3).Should().BeTrue();
+    }
 }

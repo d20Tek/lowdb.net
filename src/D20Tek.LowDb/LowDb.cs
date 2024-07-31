@@ -8,11 +8,12 @@ public class LowDb<T>
 {
     private readonly IStorageAdapter<T> _storageAdapter;
     private T _data;
-    private bool isLoaded = false;
+    private bool _isLoaded = false;
 
     public LowDb(IStorageAdapter<T> storageAdapter, T? data = null)
     {
         _storageAdapter = storageAdapter;
+        _isLoaded = data != null;
         _data = data ?? new();
     }
 
@@ -46,10 +47,10 @@ public class LowDb<T>
 
     private void EnsureDatabaseLoaded()
     {
-        if (isLoaded is false)
+        if (_isLoaded is false)
         {
             Read();
-            isLoaded = true;
+            _isLoaded = true;
         }
     }
 }

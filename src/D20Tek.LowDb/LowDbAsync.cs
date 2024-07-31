@@ -8,11 +8,12 @@ public class LowDbAsync<T>
 {
     private readonly IStorageAdapterAsync<T> _storageAdapter;
     private T _data;
-    private bool isLoaded = false;
+    private bool _isLoaded = false;
 
     public LowDbAsync(IStorageAdapterAsync<T> storageAdapter, T? data = null)
     {
         _storageAdapter = storageAdapter;
+        _isLoaded = data != null;
         _data = data ?? new();
     }
 
@@ -46,7 +47,7 @@ public class LowDbAsync<T>
 
     private async Task EnsureDatabaseLoaded()
     {
-        if (isLoaded is false)
+        if (_isLoaded is false)
         {
             await Read();
         }

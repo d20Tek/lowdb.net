@@ -1,6 +1,11 @@
 # LowDb.Net Release Notes
 These are the release notes for each major release of the LowDb.Net package:
 
+## Release 1.0.4
+Bug fix release
+
+- Fixed bug in LowDb/LowDbAsync that didn't respect data initialization via the constructor.
+
 ## Release 1.0.3
 Minor updates to the initial LowDb.Net release
 
