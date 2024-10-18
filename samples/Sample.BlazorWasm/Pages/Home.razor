@@ -1,0 +1,22 @@
+﻿@page "/"
+@using D20Tek.LowDb
+@inject LowDb<TasksDocument> _db;
+
+<PageTitle>Tasks - Home</PageTitle>
+
+<h1>My Tasks</h1>
+
+Welcome to your new app.
+
+@code{
+    protected override void OnInitialized()
+    {
+        var tasks = _db.Get().Tasks;
+
+        _db.Update(doc =>
+        {
+            doc.LastId = doc.GetNextId();
+            doc.Tasks.Add(new TaskEntity { Id = doc.LastId, Name = "test task" });
+        });
+    }
+}
