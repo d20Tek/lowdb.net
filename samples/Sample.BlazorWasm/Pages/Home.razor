@@ -6,12 +6,15 @@
 
 <h1>My Tasks</h1>
 
-Welcome to your new app.
+You have @taskCount task(s).
 
 @code{
+    int taskCount = 0;
+
     protected override void OnInitialized()
     {
         var tasks = _db.Get().Tasks;
+        taskCount = tasks.Count();
 
         _db.Update(doc =>
         {

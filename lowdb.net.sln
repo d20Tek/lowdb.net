@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.WebApi", "samples\Sa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.AsyncCli", "Sample.AsyncCli\Sample.AsyncCli.csproj", "{68048F8E-967C-4BD1-B434-9C3326FA7EE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.BlazorWasm", "samples\Sample.BlazorWasm\Sample.BlazorWasm.csproj", "{E3853EF9-A83A-43CC-B18D-B7CBC0D5CEED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.BlazorWasm", "samples\Sample.BlazorWasm\Sample.BlazorWasm.csproj", "{E3853EF9-A83A-43CC-B18D-B7CBC0D5CEED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D20Tek.LowDb.Browser", "src\D20Tek.LowDb.Browser\D20Tek.LowDb.Browser.csproj", "{48FAEA45-B6CA-4D24-9771-2C9C38577E0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{E3853EF9-A83A-43CC-B18D-B7CBC0D5CEED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3853EF9-A83A-43CC-B18D-B7CBC0D5CEED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3853EF9-A83A-43CC-B18D-B7CBC0D5CEED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48FAEA45-B6CA-4D24-9771-2C9C38577E0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48FAEA45-B6CA-4D24-9771-2C9C38577E0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48FAEA45-B6CA-4D24-9771-2C9C38577E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48FAEA45-B6CA-4D24-9771-2C9C38577E0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
