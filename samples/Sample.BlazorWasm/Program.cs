@@ -12,9 +12,11 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+var appFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 builder.Services.AddLowDb<TasksDocument>(b =>
     b.UseFileDatabase("tasks.json")
-     .WithFolder(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\d20tek-tasks")
+     .WithFolder("C:\\Users\\Darth\\AppData" + "\\d20tek-tasks")
      .WithLifetime(ServiceLifetime.Scoped));
 
 await builder.Build().RunAsync();
