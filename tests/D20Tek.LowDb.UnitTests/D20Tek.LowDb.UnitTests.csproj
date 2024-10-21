@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\D20Tek.LowDb.Browser\D20Tek.LowDb.Browser.csproj" />
     <ProjectReference Include="..\..\src\D20Tek.LowDb\D20Tek.LowDb.csproj" />
   </ItemGroup>
 
