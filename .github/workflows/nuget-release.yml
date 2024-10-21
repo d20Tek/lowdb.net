@@ -30,7 +30,14 @@ jobs:
       run: dotnet test --configuration Release /p:Version=${VERSION} --no-build
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
-    - name: Publish LowDb.Net
+
+    - name: Publish LowDb.Net (local)
       run: dotnet nuget push LowDb.Net.${VERSION}.nupkg --source https://nuget.pkg.github.com/d20Tek/index.json --api-key ${GITHUB_TOKEN}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish LowDb.Net (nuget.org)
+      run: dotnet nuget push LowDb.Net.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
