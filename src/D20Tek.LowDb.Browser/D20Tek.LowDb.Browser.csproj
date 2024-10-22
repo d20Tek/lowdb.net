@@ -4,7 +4,27 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>LowDb.Net.Browser</PackageId>
+    <Title>LowDb for .Net (Browser Extensions)</Title>
+    <Version>1.0.4</Version>
+    <Authors>d20Tek</Authors>
+    <Copyright>Copyright (c) d20Tek.  All rights reserved.</Copyright>
+    <Description>A .NET implementation of the LowDB file-based database for use in applications and experiments that only require a minimal database implementation. Supports JSON-based database in web storage.</Description>
+    <PackageProjectUrl>https://github.com/d20Tek/lowdb.net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/d20Tek/lowdb.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>LowDb; file-based database; data files</PackageTags>
+    <PackageReleaseNotes>Please find the detailed release notes at https://github.com/d20Tek/lowdb.net/ReleaseNotes.md</PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
