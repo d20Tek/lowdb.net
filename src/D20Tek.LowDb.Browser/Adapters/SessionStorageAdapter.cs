@@ -19,5 +19,9 @@ public class SessionStorageAdapter<T> : IStorageAdapter<T>
 
     public T? Read() => _storage.GetItem<T>(_keyname);
 
-    public void Write(T data) => _storage.SetItem<T>(_keyname, data);
+    public void Write(T data)
+    {
+        if (string.IsNullOrEmpty(_keyname)) throw new ArgumentException("keyname");
+        _storage.SetItem<T>(_keyname, data);
+    }
 }
