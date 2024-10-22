@@ -2,6 +2,7 @@
 // Copyright (c) d20Tek.  All rights reserved.
 //---------------------------------------------------------------------------------------------------------------------
 using Blazored.LocalStorage;
+using Blazored.SessionStorage;
 using D20Tek.LowDb.Browser;
 using D20Tek.LowDb.UnitTests.Entities;
 using D20Tek.LowDb.UnitTests.Fakes;
@@ -36,7 +37,7 @@ public class DependencyInjectionTests
     }
 
     [TestMethod]
-    public void AddLowDbAsync_AddsDbAndJsonFileAdapter()
+    public void AddLocalLowDbAsync_AddsDbAndStorageAdapter()
     {
         // arrange
         var keyname = "test-key-2";
@@ -56,8 +57,51 @@ public class DependencyInjectionTests
         lowdb.Should().NotBeNull();
     }
 
+    [TestMethod]
+    public void AddSessionLowDb_AddsDbAndSessionStorageAdapter()
+    {
+        // arrange
+        var keyname = "test-key-3";
+        var services = CreateServiceCollection();
+
+        // act
+        services.AddSessionLowDb<TestDocument>(keyname);
+
+        // assert
+        services.Any(x => x.ServiceType == typeof(LowDb<TestDocument>)).Should().BeTrue();
+
+        // act on service provider
+        var provider = services.BuildServiceProvider();
+
+        // assert
+        var lowdb = provider.GetService<LowDb<TestDocument>>();
+        lowdb.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public void AddSessionLowDbAsync_AddsDbAndStorageAdapter()
+    {
+        // arrange
+        var keyname = "test-key-2";
+        var services = CreateServiceCollection();
+
+        // act
+        services.AddSessionLowDbAsync<TestDocument>(keyname, ServiceLifetime.Singleton);
+
+        // assert
+        services.Any(x => x.ServiceType == typeof(LowDbAsync<TestDocument>)).Should().BeTrue();
+
+        // act on service provider
+        var provider = services.BuildServiceProvider();
+
+        // assert
+        var lowdb = provider.GetService<LowDbAsync<TestDocument>>();
+        lowdb.Should().NotBeNull();
+    }
+
     private static IServiceCollection CreateServiceCollection() =>
         new ServiceCollection()
             .AddSingleton<IJSRuntime, FakeJSRuntime>()
-            .AddBlazoredLocalStorage();
+            .AddBlazoredLocalStorage()
+            .AddBlazoredSessionStorage();
 }
