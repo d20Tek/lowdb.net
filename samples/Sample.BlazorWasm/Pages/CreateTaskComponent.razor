@@ -1,0 +1,27 @@
+﻿<div class="col-12 ms-1">
+    <h3>New Task</h3>
+
+    <EditForm Model="@Task" OnValidSubmit="CreateTask">
+        <div class="mb-3">
+            <label for="taskName" class="form-label">Name</label>
+            <InputText id="taskName" class="form-control" @bind-Value="Task.Name" />
+        </div>
+
+        <div class="form-check mb-3">
+            <InputCheckbox id="isComplete" class="form-check-input" @bind-Value="Task.IsCompleted" />
+            <label class="form-check-label" for="isComplete">Is Done?</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create</button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public TaskEntity Task { get; set; } = new TaskEntity { Name = "New task" };
+
+    private void CreateTask()
+    {
+        
+    }
+}

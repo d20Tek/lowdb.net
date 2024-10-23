@@ -6,8 +6,15 @@
 
 <h2>My Tasks</h2>
 
-<div class="container col-12 col-md-6 mt-2 ms-0">
-    <table class="table table-bordered">
+<div class="btn-group" role="group" aria-label="Operation buttons">
+    <button type="button" class="btn btn-primary" @onclick="OnCreate">New Task</button>
+    <button type="button" class="btn btn-primary" @onclick="OnUpdate">Edit</button>
+    <button type="button" class="btn btn-primary" @onclick="OnDelete">Delete</button>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-6 ms-0">
+    <table class="table table-sm table-bordered table-striped">
         <thead>
             <tr>
                 <th class="col-1 text-center">Id</th>
@@ -26,13 +33,46 @@
         }
         </tbody>
     </table>
+    </div>
+
+@if (showCreateComp is true)
+{
+    <div class="col-12 col-md-6">
+        <CreateTaskComponent />
+    </div>
+}
 </div>
 
 @code{
     TaskEntity[] _tasks = [];
+    bool showCreateComp = false;
+    bool showEditComp = false;
+    bool showDeleteComp = false;
+    TaskEntity? _selectedTask = null;
 
     protected override void OnInitialized()
     {
         _tasks = _service.GetTasks();
+    }
+
+    private void OnCreate()
+    {
+        showCreateComp = true;
+        showEditComp = false;
+        showDeleteComp = false;
+    }
+
+    private void OnUpdate()
+    {
+        showCreateComp = false;
+        showEditComp = true;
+        showDeleteComp = false;
+    }
+
+    private void OnDelete()
+    {
+        showCreateComp = false;
+        showEditComp = false;
+        showDeleteComp = true;
     }
 }

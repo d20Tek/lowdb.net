@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 namespace Sample.BlazorWasm.Pages;
 
-internal class TaskEntity
+public class TaskEntity
 {
     public int Id { get; set; }
 
