@@ -1,0 +1,48 @@
+﻿@inject TaskRepository _service;
+
+<div class="col-12 border border-secondary p-1">
+    <h3>Edit Task</h3>
+
+    <EditForm Model="@Task" OnValidSubmit="UpdateTask">
+        <div class="mb-3">
+            <label for="taskId" class="form-label">Id</label>
+            <InputNumber id="taskId" class="form-control" readonly @bind-Value="Task.Id" />
+        </div>
+
+        <div class="mb-3">
+            <label for="taskName" class="form-label">Name</label>
+            <InputText id="taskName" class="form-control" required @bind-Value="Task.Name" placeholder="New task" />
+        </div>
+
+        <div class="form-check mb-3">
+            <InputCheckbox id="isComplete" class="form-check-input" @bind-Value="Task.IsCompleted" />
+            <label class="form-check-label" for="isComplete">Is Done?</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </EditForm>
+
+@if (string.IsNullOrEmpty(_errorMessage))
+{
+    <div>@_errorMessage</div>
+}
+</div>
+
+@code {
+    private string _errorMessage = string.Empty;
+
+    [Parameter]
+    public TaskEntity Task { get; set; } = new TaskEntity();
+
+    [Parameter]
+    public EventCallback TasksUpdated { get; set; }
+
+    private async Task UpdateTask()
+    {
+        bool result = _service.UpdateTask(Task);
+        if (result is false)
+            _errorMessage = "Error: task could not be updated correctly.";
+        else
+            await TasksUpdated.InvokeAsync();
+    }
+}

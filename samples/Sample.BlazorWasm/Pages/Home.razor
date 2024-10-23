@@ -15,7 +15,7 @@
     <table class="table table-sm table-bordered table-striped">
         <thead>
             <tr>
-                <th class="col-1 text-center">Id</th>
+                <th class="col-1 text-center">Actions</th>
                 <th class="col-9">Task</th>
                 <th class="col-2 text-center">Done?</th>
             </tr>
@@ -24,7 +24,7 @@
         @foreach(var task in _tasks)
         {
             <tr>
-                <td class="text-center">@task.Id</td>
+                <td class="text-center"><button class="btn btn-sm btn-border-light" @onclick=@(() => OnUpdate(task))>E</button></td>
                 <td>@task.Name</td>
                 <td class="text-center">@(task.IsCompleted ? "Yes" : "No")</td>
             </tr>
@@ -33,12 +33,16 @@
     </table>
     </div>
 
-@if (showCreateComp is true)
-{
     <div class="col-12 col-md-6">
+    @if (showCreateComp is true)
+    {
         <CreateTaskComponent TasksUpdated=OnTasksUpdated />
+    }
+    else if (showEditComp is true)
+    {
+        <EditTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />
+    }
     </div>
-}
 </div>
 
 @code{
@@ -52,20 +56,23 @@
 
     private void OnCreate()
     {
+        _selectedTask = null;
         showCreateComp = true;
         showEditComp = false;
         showDeleteComp = false;
     }
 
-    private void OnUpdate()
+    private void OnUpdate(TaskEntity selectedTask)
     {
+        _selectedTask = selectedTask;
         showCreateComp = false;
         showEditComp = true;
         showDeleteComp = false;
     }
 
-    private void OnDelete()
+    private void OnDelete(TaskEntity selectedTask)
     {
+        _selectedTask = selectedTask;
         showCreateComp = false;
         showEditComp = false;
         showDeleteComp = true;
