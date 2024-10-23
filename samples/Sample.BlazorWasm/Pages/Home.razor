@@ -6,10 +6,8 @@
 
 <h2>My Tasks</h2>
 
-<div class="btn-group" role="group" aria-label="Operation buttons">
+<div class="col mb-2">
     <button type="button" class="btn btn-primary" @onclick="OnCreate">New Task</button>
-    <button type="button" class="btn btn-primary" @onclick="OnUpdate">Edit</button>
-    <button type="button" class="btn btn-primary" @onclick="OnDelete">Delete</button>
 </div>
 
 <div class="row">
@@ -38,7 +36,7 @@
 @if (showCreateComp is true)
 {
     <div class="col-12 col-md-6">
-        <CreateTaskComponent />
+        <CreateTaskComponent TasksUpdated=OnTasksUpdated />
     </div>
 }
 </div>
@@ -50,10 +48,7 @@
     bool showDeleteComp = false;
     TaskEntity? _selectedTask = null;
 
-    protected override void OnInitialized()
-    {
-        _tasks = _service.GetTasks();
-    }
+    protected override void OnInitialized() => _tasks = _service.GetTasks();
 
     private void OnCreate()
     {
@@ -75,4 +70,6 @@
         showEditComp = false;
         showDeleteComp = true;
     }
+
+    private void OnTasksUpdated() => _tasks = _service.GetTasks();
 }

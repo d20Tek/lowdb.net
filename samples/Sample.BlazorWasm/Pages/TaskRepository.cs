@@ -17,7 +17,7 @@ internal class TaskRepository
         return [.. taskDoc.Tasks];
     }
 
-    public bool CreateTask(string name)
+    public bool CreateTask(string name, bool isCompleted = false)
     {
         if (string.IsNullOrEmpty(name)) return false;
 
@@ -26,7 +26,7 @@ internal class TaskRepository
             _db.Update(doc =>
             {
                 doc.LastId = doc.GetNextId();
-                doc.Tasks.Add(new TaskEntity { Id = doc.LastId, Name = name });
+                doc.Tasks.Add(new TaskEntity { Id = doc.LastId, Name = name, IsCompleted = isCompleted });
             });
 
             return true;

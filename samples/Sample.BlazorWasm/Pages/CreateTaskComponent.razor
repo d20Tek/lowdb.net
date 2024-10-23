@@ -1,4 +1,6 @@
-﻿<div class="col-12 ms-1">
+﻿@inject TaskRepository _service;
+
+<div class="col-12 border border-secondary p-1">
     <h3>New Task</h3>
 
     <EditForm Model="@Task" OnValidSubmit="CreateTask">
@@ -14,14 +16,28 @@
 
         <button type="submit" class="btn btn-primary">Create</button>
     </EditForm>
+
+@if (string.IsNullOrEmpty(_errorMessage))
+{
+    <div>@_errorMessage</div>
+}
 </div>
 
 @code {
+    private string _errorMessage = string.Empty;
+
     [Parameter]
     public TaskEntity Task { get; set; } = new TaskEntity { Name = "New task" };
 
-    private void CreateTask()
+    [Parameter]
+    public EventCallback TasksUpdated { get; set; }
+
+    private async Task CreateTask()
     {
-        
+        bool result = _service.CreateTask(Task.Name, Task.IsCompleted);
+        if (result is false)
+            _errorMessage = "Error: new task could not be created.";
+        else
+            await TasksUpdated.InvokeAsync();
     }
 }
