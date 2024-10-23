@@ -1,6 +1,14 @@
 # LowDb.Net Release Notes
 These are the release notes for each major release of the LowDb.Net package:
 
+## Release 1.1.0
+WebStorage based storage adapters (for local and session storage)
+
+- Added sync and async LocalStorageAdapters to persist document into browser local storage.
+- Added sync and async SessionStorageAdapters to persist documents into browser session storage.
+- Factories and DI methods for setting up these new LowDb database flavors.
+- Added Sample.BlazorWasm to show usage of LocalLowDb.
+
 ## Release 1.0.4
 Bug fix release
 

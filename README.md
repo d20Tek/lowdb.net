@@ -6,10 +6,15 @@ This library is inspired by the [lowdb Javascript package](https://github.com/ty
 ## Installation
 This library is a NuGet package so it is easy to add to your project. To install the package into your solution, you can use the NuGet Package Manager. In PM, please use the following command:
 ```  
-PM > Install-Package LowDb.Net -Version 1.0.3
+PM > Install-Package LowDb.Net -Version 1.1.0
 ``` 
 
-To install in the Visual Studio UI, go to the Tools menu > "Manage NuGet Packages". Then search for LowDb.Net, and install the package from there.
+There is an optional package that extends the LowDb functionality to work with web storage technologies (session and local storage). If you are working with Blazor client projects you can install this package into your solution using NuGet Package Manager. In PM, please use the following command:
+```  
+PM > Install-Package LowDb.Net.Browser -Version 1.1.0
+``` 
+
+To install in the Visual Studio UI, go to the Tools menu > "Manage NuGet Packages". Then search for LowDb.Net, and install either package from there.
 
 ## Usage
 LowDb is a .NET 8 package that works seamlessly with any .NET application type (console, web api, Blazor, and Windows applications).
@@ -93,7 +98,7 @@ For the full implementation of this console application, please see the Sample.C
 ## Features
 * Support for synchronous (LowDb) and async (LowDbAsync) database operations.
 * Minimal, lightweight database implementation. Perfect for small databases with low write contention.
-* Customizable layer of IStorageAdapter that can be used to target physcial files vs in-memory vs web storage (in the future).
+* Customizable layer of IStorageAdapter that can be used to target physcial files vs in-memory vs web storage api.
 * Supports type-safe JSON file database format.
 * Supports in-memory adapter that is useful for writing unit tests.
 * Ability to build custom storage adapters for additional data formats.
@@ -104,11 +109,12 @@ For the full implementation of this console application, please see the Sample.C
 For more detailed examples on how to use LowDb.Net, please review the following samples:
 
 * [Sample.AsyncCli](samples/Sample.AsyncCli) - Console application for managing a task list and persisting a local file. Uses the LowDbAsync class and reads/writes files asynchronously.
+* [Sample.BlazorWasm](samples/Sample.BlazorWasm) - Blazor Web Assembly project that implements a Task app with CRUD operations on a storage-based LowDb. Uses local storage per user.
 * [Sample.Cli](samples/Sample.Cli) - Console application for managing a task list and persisting a local file. Include the ability to run the app with an in-memory database instead.
 * [Sample.WebApi](samples/Sample.WebApi) - Minimal WebApi project that exposes a TaskList web service with CRUD operations on a shared data file. All users have access to the same database file.
 
 ## Limits
-This database is intended for local usage for console and Windows applications and local storage in Blazor. It can be used on ASP.NET WebApi and Blazor Server projects, but only for projects with low database usage and low write contention.
+This database is intended for local usage for console and Windows applications and local/session storage in Blazor. It can be used on ASP.NET WebApi and Blazor Server projects, but only for projects with low database usage and low write contention.
 
 When a single JSON database file becomes larger than 50-100MB, you may start to see performance degradation. The Write operations serialize the full object tree into JSON and saves it all to the file. 
 
