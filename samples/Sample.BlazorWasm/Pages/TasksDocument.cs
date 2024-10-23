@@ -9,7 +9,7 @@ internal class TasksDocument
 
     public string Version { get; set; } = "1.0";
 
-    public HashSet<TaskEntity> Tasks { get; init; } = [];
+    public List<TaskEntity> Tasks { get; init; } = [];
 
     public int GetNextId() => ++LastId;
 }

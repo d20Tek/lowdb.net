@@ -1,25 +1,38 @@
 ﻿@page "/"
 @using D20Tek.LowDb
-@inject LowDb<TasksDocument> _db;
+@inject TaskRepository _service;
 
 <PageTitle>Tasks - Home</PageTitle>
 
 <h1>My Tasks</h1>
 
-You have @taskCount task(s).
+<table class="col-6">
+<thead>
+    <tr>
+        <td class="col-5">Task</td>
+        <td class="col-1">Complete?</td>
+    </tr>
+</thead>
+<tbody>
+@foreach(var task in _tasks)
+{
+    <tr>
+        <td class="col-10">
+            @task.Name
+        </td>
+        <td class="col-2">
+            @(task.IsCompleted ? "Yes" : "No")
+        </td>
+    </tr>
+}
+</tbody>
+</table>
 
 @code{
-    int taskCount = 0;
+    TaskEntity[] _tasks = [];
 
     protected override void OnInitialized()
     {
-        var tasks = _db.Get().Tasks;
-        taskCount = tasks.Count();
-
-        _db.Update(doc =>
-        {
-            doc.LastId = doc.GetNextId();
-            doc.Tasks.Add(new TaskEntity { Id = doc.LastId, Name = "test task" });
-        });
+        _tasks = _service.GetTasks();
     }
 }
