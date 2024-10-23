@@ -4,29 +4,29 @@
 
 <PageTitle>Tasks - Home</PageTitle>
 
-<h1>My Tasks</h1>
+<h2>My Tasks</h2>
 
-<table class="col-6">
-<thead>
-    <tr>
-        <td class="col-5">Task</td>
-        <td class="col-1">Complete?</td>
-    </tr>
-</thead>
-<tbody>
-@foreach(var task in _tasks)
-{
-    <tr>
-        <td class="col-10">
-            @task.Name
-        </td>
-        <td class="col-2">
-            @(task.IsCompleted ? "Yes" : "No")
-        </td>
-    </tr>
-}
-</tbody>
-</table>
+<div class="container col-12 col-md-6 mt-2 ms-0">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="col-1 text-center">Id</th>
+                <th class="col-9">Task</th>
+                <th class="col-2 text-center">Done?</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach(var task in _tasks)
+        {
+            <tr>
+                <td class="text-center">@task.Id</td>
+                <td>@task.Name</td>
+                <td class="text-center">@(task.IsCompleted ? "Yes" : "No")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
 
 @code{
     TaskEntity[] _tasks = [];
