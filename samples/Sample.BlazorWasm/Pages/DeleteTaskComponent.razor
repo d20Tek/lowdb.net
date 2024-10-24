@@ -4,7 +4,7 @@
     <h3>Delete Task</h3>
     <div>Confirm that you would like to delete the following task:</div>
 
-    <EditForm Model="@Task" OnValidSubmit="DeleteTask">
+    <EditForm class="mx-2" Model="@Task" OnValidSubmit="DeleteTask">
         <div class="mb-3">
             <label for="taskId" class="form-label">Id</label>
             <InputNumber id="taskId" class="form-control" readonly @bind-Value="Task.Id" />

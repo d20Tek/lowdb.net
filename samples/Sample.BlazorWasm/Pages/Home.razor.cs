@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿//---------------------------------------------------------------------------------------------------------------------
+// Copyright (c) d20Tek.  All rights reserved.
+//---------------------------------------------------------------------------------------------------------------------
+using Microsoft.AspNetCore.Components;
 
 namespace Sample.BlazorWasm.Pages;
 

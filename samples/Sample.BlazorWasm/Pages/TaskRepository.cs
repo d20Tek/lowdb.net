@@ -21,25 +21,20 @@ internal class TaskRepository
     {
         if (string.IsNullOrEmpty(name)) return false;
 
-        try
+        return TryOperation(() =>
         {
             _db.Update(doc =>
             {
                 doc.LastId = doc.GetNextId();
                 doc.Tasks.Add(new TaskEntity { Id = doc.LastId, Name = name, IsCompleted = isCompleted });
             });
-
             return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        });
     }
 
     public bool UpdateTask(TaskEntity updatedTask)
     {
-        try
+        return TryOperation(() =>
         {
             var result = false;
             _db.Update(x =>
@@ -53,29 +48,25 @@ internal class TaskRepository
                     result = true;
                 }
             });
-
             return result;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        });
     }
 
     public bool DeleteTask(int id)
     {
-        try
+        return TryOperation(() =>
         {
             _db.Update(doc =>
             {
                 doc.Tasks.RemoveAll(x => x.Id == id);
             });
-
             return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        });
+    }
+
+    private static bool TryOperation(Func<bool> operation)
+    {
+        try { return operation(); }
+        catch (Exception) { return false; }
     }
 }
