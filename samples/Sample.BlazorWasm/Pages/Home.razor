@@ -37,13 +37,7 @@
     </div>
 
     <div class="col-12 col-md-6">
-        @(_showComponent switch
-        {
-            TaskComponentType.Create => RenderCreateComponent(),
-            TaskComponentType.Edit => RenderEditComponent(),
-            TaskComponentType.Delete => RenderDeleteComponent(),
-            _ => null
-        })
+        @GetSelectedComponent()
     </div>
 </div>
 
@@ -79,6 +73,15 @@
         if (_showComponent is TaskComponentType.Delete) _showComponent = TaskComponentType.None;
         _tasks = _service.GetTasks();
     }
+
+    private RenderFragment? GetSelectedComponent() =>
+        _showComponent switch
+        {
+            TaskComponentType.Create => RenderCreateComponent(),
+            TaskComponentType.Edit => RenderEditComponent(),
+            TaskComponentType.Delete => RenderDeleteComponent(),
+            _ => null
+        };
 
     private RenderFragment RenderCreateComponent() => @<CreateTaskComponent TasksUpdated=OnTasksUpdated />;
 
