@@ -1,0 +1,33 @@
+﻿<table class="table table-sm table-bordered table-striped">
+    <thead>
+        <tr>
+            <th class="col-2 text-center">Actions</th>
+            <th class="col-8">Task</th>
+            <th class="col-2 text-center">Done?</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var task in Tasks)
+    {
+        <tr>
+            <td class="text-center">
+                <button class="btn btn-sm" @onclick=@(async() => await UpdateClicked.InvokeAsync(task))>E</button>
+                <button class="btn btn-sm" @onclick=@(async() => await DeleteClicked.InvokeAsync(task))>D</button>
+            </td>
+            <td>@task.Name</td>
+            <td class="text-center">@(task.IsCompleted ? "Yes" : "No")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public TaskEntity[] Tasks { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<TaskEntity> UpdateClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskEntity> DeleteClicked { get; set; }
+}
