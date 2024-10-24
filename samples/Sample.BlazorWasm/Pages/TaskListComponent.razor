@@ -18,7 +18,7 @@
                     <i class="bi bi-trash3"></i>
                 </button>
             </td>
-            <td>@task.Name</td>
+            <td class=@(task.IsCompleted ? "text-decoration-line-through" : "")>@task.Name</td>
             <td class="text-center">@(task.IsCompleted ? "Yes" : "No")</td>
         </tr>
     }
