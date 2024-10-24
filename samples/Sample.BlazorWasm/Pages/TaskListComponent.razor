@@ -11,8 +11,12 @@
     {
         <tr>
             <td class="text-center">
-                <button class="btn btn-sm" @onclick=@(async() => await UpdateClicked.InvokeAsync(task))>E</button>
-                <button class="btn btn-sm" @onclick=@(async() => await DeleteClicked.InvokeAsync(task))>D</button>
+                <button class="btn btn-sm" @onclick=@(async() => await UpdateClicked.InvokeAsync(task))>
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm" @onclick=@(async() => await DeleteClicked.InvokeAsync(task))>
+                    <i class="bi bi-trash3"></i>
+                </button>
             </td>
             <td>@task.Name</td>
             <td class="text-center">@(task.IsCompleted ? "Yes" : "No")</td>
