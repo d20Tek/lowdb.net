@@ -42,52 +42,9 @@
 </div>
 
 @code{
-    public enum TaskComponentType { None, Create, Edit, Delete }
+    private RenderFragment RenderCreate() => @<CreateTaskComponent TasksUpdated=OnTasksUpdated />;
 
-    TaskComponentType _showComponent = TaskComponentType.None;
-    TaskEntity[] _tasks = [];
-    TaskEntity? _selectedTask = null;
+    private RenderFragment RenderEdit() => @<EditTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />;
 
-    protected override void OnInitialized() => _tasks = _service.GetTasks();
-
-    private void OnCreate()
-    {
-        _selectedTask = null;
-        _showComponent = TaskComponentType.Create;
-    }
-
-    private void OnUpdate(TaskEntity selectedTask)
-    {
-        _selectedTask = selectedTask;
-        _showComponent = TaskComponentType.Edit;
-    }
-
-    private void OnDelete(TaskEntity selectedTask)
-    {
-        _selectedTask = selectedTask;
-        _showComponent = TaskComponentType.Delete;
-    }
-
-    private void OnTasksUpdated()
-    {
-        if (_showComponent is TaskComponentType.Delete) _showComponent = TaskComponentType.None;
-        _tasks = _service.GetTasks();
-    }
-
-    private RenderFragment? GetSelectedComponent() =>
-        _showComponent switch
-        {
-            TaskComponentType.Create => RenderCreateComponent(),
-            TaskComponentType.Edit => RenderEditComponent(),
-            TaskComponentType.Delete => RenderDeleteComponent(),
-            _ => null
-        };
-
-    private RenderFragment RenderCreateComponent() => @<CreateTaskComponent TasksUpdated=OnTasksUpdated />;
-
-    private RenderFragment RenderEditComponent() =>
-        @<EditTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />;
-
-    private RenderFragment RenderDeleteComponent() =>
-        @<DeleteTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />;
+    private RenderFragment RenderDelete() => @<DeleteTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />;
 }
