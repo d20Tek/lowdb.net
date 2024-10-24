@@ -7,7 +7,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>LowDb.Net.Browser</PackageId>
     <Title>LowDb for .Net (Browser Extensions)</Title>
-    <Version>1.0.4</Version>
+    <Version>1.1.0</Version>
     <Authors>d20Tek</Authors>
     <Copyright>Copyright (c) d20Tek.  All rights reserved.</Copyright>
     <Description>A .NET implementation of the LowDB file-based database for use in applications and experiments that only require a minimal database implementation. Supports JSON-based database in web storage.</Description>
