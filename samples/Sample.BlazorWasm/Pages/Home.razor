@@ -15,8 +15,8 @@
     <table class="table table-sm table-bordered table-striped">
         <thead>
             <tr>
-                <th class="col-1 text-center">Actions</th>
-                <th class="col-9">Task</th>
+                <th class="col-2 text-center">Actions</th>
+                <th class="col-8">Task</th>
                 <th class="col-2 text-center">Done?</th>
             </tr>
         </thead>
@@ -24,7 +24,10 @@
         @foreach(var task in _tasks)
         {
             <tr>
-                <td class="text-center"><button class="btn btn-sm btn-border-light" @onclick=@(() => OnUpdate(task))>E</button></td>
+                <td class="text-center">
+                    <button class="btn btn-sm" @onclick=@(() => OnUpdate(task))>E</button>
+                    <button class="btn btn-sm" @onclick=@(() => OnDelete(task))>D</button>
+                </td>
                 <td>@task.Name</td>
                 <td class="text-center">@(task.IsCompleted ? "Yes" : "No")</td>
             </tr>
@@ -41,6 +44,10 @@
     else if (showEditComp is true)
     {
         <EditTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />
+    }
+    else if (showDeleteComp is true)
+    {
+        <DeleteTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />
     }
     </div>
 </div>
