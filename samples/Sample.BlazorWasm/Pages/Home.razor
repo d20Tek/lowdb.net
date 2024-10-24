@@ -37,26 +37,21 @@
     </div>
 
     <div class="col-12 col-md-6">
-    @if (showCreateComp is true)
-    {
-        <CreateTaskComponent TasksUpdated=OnTasksUpdated />
-    }
-    else if (showEditComp is true)
-    {
-        <EditTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />
-    }
-    else if (showDeleteComp is true)
-    {
-        <DeleteTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />
-    }
+        @(_showComponent switch
+        {
+            TaskComponentType.Create => RenderCreateComponent(),
+            TaskComponentType.Edit => RenderEditComponent(),
+            TaskComponentType.Delete => RenderDeleteComponent(),
+            _ => null
+        })
     </div>
 </div>
 
 @code{
+    public enum TaskComponentType { None, Create, Edit, Delete }
+
+    TaskComponentType _showComponent = TaskComponentType.None;
     TaskEntity[] _tasks = [];
-    bool showCreateComp = false;
-    bool showEditComp = false;
-    bool showDeleteComp = false;
     TaskEntity? _selectedTask = null;
 
     protected override void OnInitialized() => _tasks = _service.GetTasks();
@@ -64,26 +59,32 @@
     private void OnCreate()
     {
         _selectedTask = null;
-        showCreateComp = true;
-        showEditComp = false;
-        showDeleteComp = false;
+        _showComponent = TaskComponentType.Create;
     }
 
     private void OnUpdate(TaskEntity selectedTask)
     {
         _selectedTask = selectedTask;
-        showCreateComp = false;
-        showEditComp = true;
-        showDeleteComp = false;
+        _showComponent = TaskComponentType.Edit;
     }
 
     private void OnDelete(TaskEntity selectedTask)
     {
         _selectedTask = selectedTask;
-        showCreateComp = false;
-        showEditComp = false;
-        showDeleteComp = true;
+        _showComponent = TaskComponentType.Delete;
     }
 
-    private void OnTasksUpdated() => _tasks = _service.GetTasks();
+    private void OnTasksUpdated()
+    {
+        if (_showComponent is TaskComponentType.Delete) _showComponent = TaskComponentType.None;
+        _tasks = _service.GetTasks();
+    }
+
+    private RenderFragment RenderCreateComponent() => @<CreateTaskComponent TasksUpdated=OnTasksUpdated />;
+
+    private RenderFragment RenderEditComponent() =>
+        @<EditTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />;
+
+    private RenderFragment RenderDeleteComponent() =>
+        @<DeleteTaskComponent Task=_selectedTask TasksUpdated=OnTasksUpdated />;
 }
