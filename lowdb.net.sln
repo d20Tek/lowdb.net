@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D20Tek.LowDb.Browser", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.AsyncCli", "samples\Sample.AsyncCli\Sample.AsyncCli.csproj", "{B8FB7329-2621-47BE-90E1-CF81C5D708B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D20Tek.LowDb.Repositories", "src\D20Tek.LowDb.Repositories\D20Tek.LowDb.Repositories.csproj", "{D89552E0-EF21-429C-BF68-70CACC33D4F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{B8FB7329-2621-47BE-90E1-CF81C5D708B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8FB7329-2621-47BE-90E1-CF81C5D708B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8FB7329-2621-47BE-90E1-CF81C5D708B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D89552E0-EF21-429C-BF68-70CACC33D4F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D89552E0-EF21-429C-BF68-70CACC33D4F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D89552E0-EF21-429C-BF68-70CACC33D4F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D89552E0-EF21-429C-BF68-70CACC33D4F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

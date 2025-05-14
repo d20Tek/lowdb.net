@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>LowDb Repositories</Title>
+    <Company>d20Tek</Company>
+    <Authors>d20Tek</Authors>
+    <Description>A .NET implementation of the LowDB file-based database for use in applications and experiments that only require a minimal database implementation. Supports JSON-based database in web storage.
+This extension provides the Repository pattern over a LowDb database.</Description>
+    <Copyright>Copyright (c) d20Tek.  All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/d20Tek/lowdb.net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/d20Tek/lowdb.net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>LowDb; file-based database; data files; repository</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="D20Tek.Functional" Version="0.9.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\D20Tek.LowDb\D20Tek.LowDb.csproj" />
+  </ItemGroup>
+
+</Project>
