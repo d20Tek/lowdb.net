@@ -1,5 +1,5 @@
 ﻿namespace D20Tek.LowDb.Repositories;
 
-public class DbDocument
+public abstract class DbDocument
 {
 }

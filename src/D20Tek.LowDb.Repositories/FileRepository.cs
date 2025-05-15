@@ -22,10 +22,10 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
         GetHashSet = setSelector.Compile();
     }
 
-    public Result<TEntity[]> GetAllAsync(CancellationToken cancellationToken = default) =>
+    public Result<TEntity[]> GetAll(CancellationToken cancellationToken = default) =>
         Try(() => GetHashSet(_db.Get()).ToArray());
 
-    public Result<TEntity> GetByIdAsync<TProperty>(
+    public Result<TEntity> GetById<TProperty>(
         Expression<Func<TEntity, TProperty>> idSelector,
         TProperty id,
         CancellationToken cancellationToken = default)
@@ -36,20 +36,28 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
             var entity = GetHashSet(_db.Get()).FirstOrDefault(x => getId(x)?.Equals(id) ?? false);
             return entity ?? NotFoundError<TEntity>(id);
         }).Flatten();
+
+    public Result<TEntity[]> Find(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default) =>
+        Try(() => GetHashSet(_db.Get()).AsQueryable().Where(predicate).ToArray());
+
+    public Result<bool> Exists(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default) =>
+        Try(() => GetHashSet(_db.Get()).AsQueryable().Any(predicate));
+
+    public Result<TEntity> Add(TEntity entity, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     
-    public Result<TEntity[]> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public Result<TEntity[]> AddRange(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     
-    public Result<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public Result<TEntity> Remove(TEntity entity, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     
-    public Result<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default) => throw new NotImplementedException();
-    
-    public Result<TEntity[]> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) => throw new NotImplementedException();
-    
-    public Result<TEntity> RemoveAsync(TEntity entity, CancellationToken cancellationToken = default) => throw new NotImplementedException();
-    
-    public Result<TEntity[]> RemoveRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public Result<TEntity[]> RemoveRange(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     
     public Result<TEntity> Update(TEntity entity) => throw new NotImplementedException();
+
+    public Result<int> SaveChanges(CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
     private static Result<T> Try<T>(Func<T> operation) where T : notnull
     {

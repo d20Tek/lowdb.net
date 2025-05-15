@@ -30,6 +30,9 @@ public interface IRepositoryAsync<T> where T : class
     // Remove multiple entities
     Task<Result<T[]>> RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
 
-    // Update an entity (you might customize this for your use case)
+    // Update an entity
     Task<Result<T>> Update(T entity);
+
+    // Save changes (allows multiple batched changes per save)
+    Task<Result<int>> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
