@@ -10,9 +10,6 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
     public static Result<T> NotFoundError<T>(object id) where T : notnull =>
         Result<T>.Failure(Error.NotFound("Entity.NotFound", $"Entity with id={id} not found."));
 
-    public static Failure<int> AlreadyExistsError(int id) =>
-        Error.Conflict("Entry.AlreadyExists", $"Entry with id={id} already exists.");
-
     private readonly LowDb<TDocument> _db;
     private readonly Func<TDocument, HashSet<TEntity>> GetHashSet;
 
@@ -22,13 +19,10 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
         GetHashSet = setSelector.Compile();
     }
 
-    public Result<TEntity[]> GetAll(CancellationToken cancellationToken = default) =>
-        Try(() => GetHashSet(_db.Get()).ToArray());
+    public Result<IEnumerable<TEntity>> GetAll() =>
+        Try(() => GetHashSet(_db.Get()).AsEnumerable());
 
-    public Result<TEntity> GetById<TProperty>(
-        Expression<Func<TEntity, TProperty>> idSelector,
-        TProperty id,
-        CancellationToken cancellationToken = default)
+    public Result<TEntity> GetById<TProperty>(Expression<Func<TEntity, TProperty>> idSelector, TProperty id)
         where TProperty : notnull =>
         Try(() =>
         {
@@ -37,27 +31,37 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
             return entity ?? NotFoundError<TEntity>(id);
         }).Flatten();
 
-    public Result<TEntity[]> Find(
-        Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken = default) =>
-        Try(() => GetHashSet(_db.Get()).AsQueryable().Where(predicate).ToArray());
+    public Result<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate) =>
+        Try(() => GetHashSet(_db.Get()).AsQueryable().Where(predicate).AsEnumerable());
 
-    public Result<bool> Exists(
-        Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken = default) =>
+    public Result<bool> Exists(Expression<Func<TEntity, bool>> predicate) =>
         Try(() => GetHashSet(_db.Get()).AsQueryable().Any(predicate));
 
-    public Result<TEntity> Add(TEntity entity, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public Result<TEntity> Add(TEntity entity) =>
+        Try(() =>
+        {
+            GetHashSet(_db.Get()).Add(entity);
+            return entity;
+        });
     
-    public Result<TEntity[]> AddRange(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public Result<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities) =>
+        Try(() =>
+        {
+            var set = GetHashSet(_db.Get());
+            foreach (var entity in entities)
+            {
+                set.Add(entity);
+            }
+            return entities;
+        });
     
-    public Result<TEntity> Remove(TEntity entity, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public Result<TEntity> Remove(TEntity entity) => throw new NotImplementedException();
     
-    public Result<TEntity[]> RemoveRange(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public Result<IEnumerable<TEntity>> RemoveRange(IEnumerable<TEntity> entities) => throw new NotImplementedException();
     
     public Result<TEntity> Update(TEntity entity) => throw new NotImplementedException();
 
-    public Result<int> SaveChanges(CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public Result<bool> SaveChanges() => throw new NotImplementedException();
 
     private static Result<T> Try<T>(Func<T> operation) where T : notnull
     {

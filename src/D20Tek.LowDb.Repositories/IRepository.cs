@@ -3,39 +3,36 @@ using System.Linq.Expressions;
 
 namespace D20Tek.LowDb.Repositories;
 
-public interface IRepository<T> where T : class
+public interface IRepository<TEntity> where TEntity : class
 {
     // Get all entities
-    Result<T[]> GetAll(CancellationToken cancellationToken = default);
+    Result<IEnumerable<TEntity>> GetAll();
 
     // Get a single entity by its primary key
-    public Result<T> GetById<TProperty>(
-        Expression<Func<T, TProperty>> idSelector,
-        TProperty id,
-        CancellationToken cancellationToken = default)
+    public Result<TEntity> GetById<TProperty>(Expression<Func<TEntity, TProperty>> idSelector, TProperty id)
         where TProperty : notnull;
 
     // Query with predicate
-    Result<T[]> Find(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+    Result<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate);
 
     // Check existence
-    Result<bool> Exists(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+    Result<bool> Exists(Expression<Func<TEntity, bool>> predicate);
 
     // Add an entity
-    Result<T> Add(T entity, CancellationToken cancellationToken = default);
+    Result<TEntity> Add(TEntity entity);
 
     // Add multiple entities
-    Result<T[]> AddRange(IEnumerable<T> entities, CancellationToken cancellationToken = default);
+    Result<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities);
 
     // Remove an entity
-    Result<T> Remove(T entity, CancellationToken cancellationToken = default);
+    Result<TEntity> Remove(TEntity entity);
 
     // Remove multiple entities
-    Result<T[]> RemoveRange(IEnumerable<T> entities, CancellationToken cancellationToken = default);
+    Result<IEnumerable<TEntity>> RemoveRange(IEnumerable<TEntity> entities);
 
     // Update an entity
-    Result<T> Update(T entity);
+    Result<TEntity> Update(TEntity entity);
 
     // Save changes (allows multiple batched changes per save)
-    Result<int> SaveChanges(CancellationToken cancellationToken = default);
+    Result<bool> SaveChanges();
 }
