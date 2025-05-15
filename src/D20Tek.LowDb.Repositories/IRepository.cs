@@ -12,7 +12,8 @@ public interface IRepository<T> where T : class
     public Result<T> GetByIdAsync<TProperty>(
         Expression<Func<T, TProperty>> idSelector,
         TProperty id,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default)
+        where TProperty : notnull;
 
     // Query with predicate
     Result<T[]> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
