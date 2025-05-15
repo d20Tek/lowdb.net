@@ -48,7 +48,8 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
             var set = GetHashSet(_db.Get());
             foreach (var entity in entities)
             {
-                set.Add(entity);
+                var added = set.Add(entity);
+                if (added is false) return Errors.AddFailedError<IEnumerable<TEntity>>(entity);
             }
             return Result<IEnumerable<TEntity>>.Success(entities);
         });
@@ -57,12 +58,22 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
         Try(() =>
         {
             var removed = GetHashSet(_db.Get()).Remove(entity);
-            return removed ? entity : Errors.AddFailedError<TEntity>(entity);
+            return removed ? entity : Errors.RemoveFailedError<TEntity>(entity);
         });
     
-    public Result<IEnumerable<TEntity>> RemoveRange(IEnumerable<TEntity> entities) => throw new NotImplementedException();
+    public Result<IEnumerable<TEntity>> RemoveRange(IEnumerable<TEntity> entities) =>
+        Try(() =>
+        {
+            var set = GetHashSet(_db.Get());
+            foreach (var entity in entities)
+            {
+                var removed = set.Remove(entity);
+                if (removed is false) return Errors.RemoveFailedError<IEnumerable<TEntity>>(entity);
+            }
+            return Result<IEnumerable<TEntity>>.Success(entities);
+        });
     
-    public Result<TEntity> Update(TEntity entity) => throw new NotImplementedException();
+    public Result<TEntity> Update(TEntity entity) => Result<TEntity>.Success(entity);
 
     public Result<bool> SaveChanges() => 
         Try(() =>
