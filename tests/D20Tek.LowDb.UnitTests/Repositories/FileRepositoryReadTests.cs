@@ -109,6 +109,20 @@ public class FileRepositoryReadTests
         Assert.IsFalse(result.GetValue());
     }
 
+    [TestMethod]
+    public void Exists_WithException_ReturnsFailure()
+    {
+        // arrange
+        var repo = InitializeTestsRepository();
+
+        // act
+        var result = repo.Exists(e => (e.Id / 0) > 1 );
+
+        // assert
+        Assert.IsFalse(result.IsSuccess);
+        Assert.AreEqual("General.Exception", result.GetErrors().First().Code);
+    }
+
     private static TestsRepository InitializeTestsRepository()
     {
         var document = new TestsRepository.Document

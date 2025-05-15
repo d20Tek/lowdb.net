@@ -24,7 +24,7 @@ public class FileRepository<TEntity, TDocument> : IRepository<TEntity>
         Try(() =>
         {
             var getId = idSelector.Compile();
-            var entity = GetHashSet(_db.Get()).FirstOrDefault(x => getId(x)?.Equals(id) ?? false);
+            var entity = GetHashSet(_db.Get()).FirstOrDefault(x => getId(x)!.Equals(id));
             return entity ?? Errors.NotFoundError<TEntity>(id);
         });
 

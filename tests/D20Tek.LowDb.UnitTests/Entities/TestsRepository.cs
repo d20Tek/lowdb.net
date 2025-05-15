@@ -1,4 +1,5 @@
 ﻿using D20Tek.LowDb.Repositories;
+using System.Diagnostics.CodeAnalysis;
 
 namespace D20Tek.LowDb.UnitTests.Entities;
 
@@ -6,6 +7,7 @@ internal interface ITestsRepository : IRepository<TestEntity>;
 
 internal sealed class TestsRepository : FileRepository<TestEntity, TestsRepository.Document>, ITestsRepository
 {
+    [ExcludeFromCodeCoverage]
     public class Foo
     {
         public string Id { get; }
