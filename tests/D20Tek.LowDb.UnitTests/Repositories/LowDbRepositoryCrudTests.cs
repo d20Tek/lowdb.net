@@ -4,7 +4,7 @@ using D20Tek.LowDb.UnitTests.Entities;
 namespace D20Tek.LowDb.UnitTests.Repositories;
 
 [TestClass]
-public class FileRepositoryCrudTests
+public class LowDbRepositoryCrudTests
 {
     private const string _addTestFile = "add-test-file.json";
     private const string _addRangeTestFile = "add-range-test-file.json";

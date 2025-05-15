@@ -5,7 +5,7 @@ namespace D20Tek.LowDb.UnitTests.Entities;
 
 internal interface ITestsRepository : IRepository<TestEntity>;
 
-internal sealed class TestsRepository : FileRepository<TestEntity, TestsRepository.Document>, ITestsRepository
+internal sealed class TestsRepository : LowDbRepository<TestEntity, TestsRepository.Document>, ITestsRepository
 {
     [ExcludeFromCodeCoverage]
     public class Foo

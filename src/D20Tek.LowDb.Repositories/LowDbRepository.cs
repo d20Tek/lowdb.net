@@ -3,14 +3,14 @@ using System.Linq.Expressions;
 
 namespace D20Tek.LowDb.Repositories;
 
-public class FileRepository<TEntity, TDocument> : IRepository<TEntity>
+public class LowDbRepository<TEntity, TDocument> : IRepository<TEntity>
     where TEntity : class
     where TDocument : DbDocument, new()
 {
     private readonly LowDb<TDocument> _db;
     private readonly Func<TDocument, HashSet<TEntity>> GetHashSet;
 
-    public FileRepository(LowDb<TDocument> db, Expression<Func<TDocument, HashSet<TEntity>>> setSelector)
+    public LowDbRepository(LowDb<TDocument> db, Expression<Func<TDocument, HashSet<TEntity>>> setSelector)
     {
         _db = db;
         GetHashSet = setSelector.Compile();

@@ -4,7 +4,7 @@ using D20Tek.LowDb.UnitTests.Entities;
 namespace D20Tek.LowDb.UnitTests.Repositories;
 
 [TestClass]
-public class FileRepositoryReadTests
+public class LowDbRepositoryReadTests
 {
     [TestMethod]
     public void GetAll_ReturnsEntityList()
