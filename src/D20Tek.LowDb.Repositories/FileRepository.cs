@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace D20Tek.LowDb.Repositories;
 
-public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
+public class FileRepository<TEntity, TDocument> : IRepository<TEntity>
     where TEntity : class
     where TDocument : DbDocument, new()
 {
