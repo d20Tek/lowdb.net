@@ -7,9 +7,6 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
     where TEntity : class
     where TDocument : DbDocument, new()
 {
-    public static Result<T> NotFoundError<T>(object id) where T : notnull =>
-        Result<T>.Failure(Error.NotFound("Entity.NotFound", $"Entity with id={id} not found."));
-
     private readonly LowDb<TDocument> _db;
     private readonly Func<TDocument, HashSet<TEntity>> GetHashSet;
 
@@ -20,7 +17,7 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
     }
 
     public Result<IEnumerable<TEntity>> GetAll() =>
-        Try(() => GetHashSet(_db.Get()).AsEnumerable());
+        Try(() => Result<IEnumerable<TEntity>>.Success(GetHashSet(_db.Get()).AsEnumerable()));
 
     public Result<TEntity> GetById<TProperty>(Expression<Func<TEntity, TProperty>> idSelector, TProperty id)
         where TProperty : notnull =>
@@ -28,20 +25,21 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
         {
             var getId = idSelector.Compile();
             var entity = GetHashSet(_db.Get()).FirstOrDefault(x => getId(x)?.Equals(id) ?? false);
-            return entity ?? NotFoundError<TEntity>(id);
-        }).Flatten();
+            return entity ?? Errors.NotFoundError<TEntity>(id);
+        });
 
     public Result<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate) =>
-        Try(() => GetHashSet(_db.Get()).AsQueryable().Where(predicate).AsEnumerable());
+        Try(() => Result<IEnumerable<TEntity>>.Success(
+            GetHashSet(_db.Get()).AsQueryable().Where(predicate).AsEnumerable()));
 
     public Result<bool> Exists(Expression<Func<TEntity, bool>> predicate) =>
-        Try(() => GetHashSet(_db.Get()).AsQueryable().Any(predicate));
+        Try(() => Result<bool>.Success(GetHashSet(_db.Get()).AsQueryable().Any(predicate)));
 
     public Result<TEntity> Add(TEntity entity) =>
         Try(() =>
         {
-            GetHashSet(_db.Get()).Add(entity);
-            return entity;
+            var added = GetHashSet(_db.Get()).Add(entity);
+            return added ? entity :  Errors.AddFailedError<TEntity>(entity);
         });
     
     public Result<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities) =>
@@ -52,18 +50,28 @@ public sealed class FileRepository<TEntity, TDocument> : IRepository<TEntity>
             {
                 set.Add(entity);
             }
-            return entities;
+            return Result<IEnumerable<TEntity>>.Success(entities);
         });
     
-    public Result<TEntity> Remove(TEntity entity) => throw new NotImplementedException();
+    public Result<TEntity> Remove(TEntity entity) =>
+        Try(() =>
+        {
+            var removed = GetHashSet(_db.Get()).Remove(entity);
+            return removed ? entity : Errors.AddFailedError<TEntity>(entity);
+        });
     
     public Result<IEnumerable<TEntity>> RemoveRange(IEnumerable<TEntity> entities) => throw new NotImplementedException();
     
     public Result<TEntity> Update(TEntity entity) => throw new NotImplementedException();
 
-    public Result<bool> SaveChanges() => throw new NotImplementedException();
+    public Result<bool> SaveChanges() => 
+        Try(() =>
+        {
+            _db.Write();
+            return Result<bool>.Success(true);
+        });
 
-    private static Result<T> Try<T>(Func<T> operation) where T : notnull
+    private static Result<T> Try<T>(Func<Result<T>> operation) where T : notnull
     {
         try
         {
