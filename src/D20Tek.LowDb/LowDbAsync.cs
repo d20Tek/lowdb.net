@@ -17,39 +17,39 @@ public class LowDbAsync<T>
         _data = data ?? new();
     }
 
-    public async Task Read()
+    public async Task Read(CancellationToken token = default)
     {
-        var data = await _storageAdapter.Read();
+        var data = await _storageAdapter.Read(token);
         _data = data ?? new T();
     }
 
-    public async Task Write()
+    public async Task Write(CancellationToken token = default)
     {
-        await _storageAdapter.Write(_data);
+        await _storageAdapter.Write(_data, token);
     }
 
-    public async Task<T> Get()
+    public async Task<T> Get(CancellationToken token = default)
     {
-        await EnsureDatabaseLoaded();
+        await EnsureDatabaseLoaded(token);
         return _data;
     }
 
-    public async Task Update(Action<T> updateAction, bool autoSave = true)
+    public async Task Update(Action<T> updateAction, bool autoSave = true, CancellationToken token = default)
     {
-        await EnsureDatabaseLoaded();
+        await EnsureDatabaseLoaded(token);
         updateAction(_data);
 
         if (autoSave is true)
         {
-            await Write();
+            await Write(token);
         }
     }
 
-    private async Task EnsureDatabaseLoaded()
+    private async Task EnsureDatabaseLoaded(CancellationToken token = default)
     {
         if (_isLoaded is false)
         {
-            await Read();
+            await Read(token);
         }
     }
 }

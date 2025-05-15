@@ -19,7 +19,7 @@ public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity
 
     public async Task<Result<IEnumerable<TEntity>>> GetAllAsync(CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
-            Result<IEnumerable<TEntity>>.Success(GetHashSet(await _db.Get()).AsEnumerable()));
+            Result<IEnumerable<TEntity>>.Success(GetHashSet(await _db.Get(token)).AsEnumerable()));
 
     public async Task<Result<TEntity>> GetByIdAsync<TProperty>(
         Expression<Func<TEntity, TProperty>> idSelector,
@@ -29,7 +29,7 @@ public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity
         await TryAsync.RunAsync(async () =>
         {
             var getId = idSelector.Compile();
-            var entity = GetHashSet(await _db.Get()).FirstOrDefault(x => getId(x)!.Equals(id));
+            var entity = GetHashSet(await _db.Get(token)).FirstOrDefault(x => getId(x)!.Equals(id));
             return entity ?? Errors.NotFoundError<TEntity>(id);
         });
 
@@ -37,18 +37,18 @@ public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken token = default) =>
         await TryAsync.RunAsync(async () => Result<IEnumerable<TEntity>>.Success(
-            GetHashSet(await _db.Get()).AsQueryable().Where(predicate).AsEnumerable()));
+            GetHashSet(await _db.Get(token)).AsQueryable().Where(predicate).AsEnumerable()));
 
     public async Task<Result<bool>> ExistsAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
-            Result<bool>.Success(GetHashSet(await _db.Get()).AsQueryable().Any(predicate)));
+            Result<bool>.Success(GetHashSet(await _db.Get(token)).AsQueryable().Any(predicate)));
 
     public async Task<Result<TEntity>> AddAsync(TEntity entity, CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
         {
-            var added = GetHashSet(await _db.Get()).Add(entity);
+            var added = GetHashSet(await _db.Get(token)).Add(entity);
             return added ? entity :  Errors.AddFailedError<TEntity>(entity);
         });
     
@@ -57,7 +57,7 @@ public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity
         CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
         {
-            var set = GetHashSet(await _db.Get());
+            var set = GetHashSet(await _db.Get(token));
             foreach (var entity in entities)
             {
                 var added = set.Add(entity);
@@ -69,7 +69,7 @@ public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity
     public async Task<Result<TEntity>> RemoveAsync(TEntity entity, CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
         {
-            var removed = GetHashSet(await _db.Get()).Remove(entity);
+            var removed = GetHashSet(await _db.Get(token)).Remove(entity);
             return removed ? entity : Errors.RemoveFailedError<TEntity>(entity);
         });
     
@@ -78,7 +78,7 @@ public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity
         CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
         {
-            var set = GetHashSet(await _db.Get());
+            var set = GetHashSet(await _db.Get(token));
             foreach (var entity in entities)
             {
                 var removed = set.Remove(entity);
@@ -93,7 +93,7 @@ public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity
     public async Task<Result<bool>> SaveChangesAsync(CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
         {
-            await _db.Write();
+            await _db.Write(token);
             return Result<bool>.Success(true);
         });
 }

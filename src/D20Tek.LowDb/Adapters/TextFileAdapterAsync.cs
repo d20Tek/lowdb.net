@@ -12,7 +12,7 @@ public class TextFileAdapterAsync : IStorageAdapterAsync<string>
         _filename = filename;
     }
 
-    public async Task<string?> Read()
+    public async Task<string?> Read(CancellationToken token = default)
     {
         var folder = Path.GetDirectoryName(_filename);
 
@@ -22,16 +22,16 @@ public class TextFileAdapterAsync : IStorageAdapterAsync<string>
             return null;
         }
 
-        var text = await File.ReadAllTextAsync(_filename);
+        var text = await File.ReadAllTextAsync(_filename, token);
         return text;
     }
 
-    public async Task Write(string data)
+    public async Task Write(string data, CancellationToken token = default)
     {
         var folder = Path.GetDirectoryName(_filename);
 
         EnsureFolderExists(folder);
-        await File.WriteAllTextAsync(_filename, data);
+        await File.WriteAllTextAsync(_filename, data, token);
     }
 
     public void EnsureFolderExists(string? folderPath)

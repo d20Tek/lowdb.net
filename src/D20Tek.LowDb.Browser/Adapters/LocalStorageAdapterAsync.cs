@@ -17,11 +17,11 @@ public class LocalStorageAdapterAsync<T> : IStorageAdapterAsync<T>
         _storage = storage;
     }
 
-    public async Task<T?> Read() => await _storage.GetItemAsync<T>(_keyname);
+    public async Task<T?> Read(CancellationToken token = default) => await _storage.GetItemAsync<T>(_keyname, token);
 
-    public async Task Write(T data)
+    public async Task Write(T data, CancellationToken token = default)
     {
         if (string.IsNullOrEmpty(_keyname)) throw new ArgumentException("keyname");
-        await _storage.SetItemAsync<T>(_keyname, data);
+        await _storage.SetItemAsync<T>(_keyname, data, token);
     }
 }

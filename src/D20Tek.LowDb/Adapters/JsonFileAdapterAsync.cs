@@ -25,9 +25,9 @@ public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T>
         _textAdapter = new TextFileAdapterAsync(filename);
     }
 
-    public async Task<T?> Read()
+    public async Task<T?> Read(CancellationToken token = default)
     {
-        var json = await _textAdapter.Read();
+        var json = await _textAdapter.Read(token);
         if (string.IsNullOrEmpty(json))
         {
             return null;
@@ -39,9 +39,9 @@ public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T>
         }
     }
 
-    public async Task Write(T data)
+    public async Task Write(T data, CancellationToken token = default)
     {
         var json = JsonSerializer.Serialize<T>(data, _serializerOptions);
-        await _textAdapter.Write(json);
+        await _textAdapter.Write(json, token);
     }
 }
