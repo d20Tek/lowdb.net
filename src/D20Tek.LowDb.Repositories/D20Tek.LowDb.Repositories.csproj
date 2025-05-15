@@ -26,7 +26,7 @@ This extension provides the Repository pattern over a LowDb database.</Descripti
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="D20Tek.Functional" Version="0.9.14" />
+    <PackageReference Include="D20Tek.Functional" Version="0.9.15" />
   </ItemGroup>
 
   <ItemGroup>

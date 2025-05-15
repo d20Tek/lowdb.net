@@ -17,11 +17,11 @@ public class FileRepository<TEntity, TDocument> : IRepository<TEntity>
     }
 
     public Result<IEnumerable<TEntity>> GetAll() =>
-        Try(() => Result<IEnumerable<TEntity>>.Success(GetHashSet(_db.Get()).AsEnumerable()));
+        Try.Run(() => Result<IEnumerable<TEntity>>.Success(GetHashSet(_db.Get()).AsEnumerable()));
 
     public Result<TEntity> GetById<TProperty>(Expression<Func<TEntity, TProperty>> idSelector, TProperty id)
         where TProperty : notnull =>
-        Try(() =>
+        Try.Run(() =>
         {
             var getId = idSelector.Compile();
             var entity = GetHashSet(_db.Get()).FirstOrDefault(x => getId(x)!.Equals(id));
@@ -29,21 +29,21 @@ public class FileRepository<TEntity, TDocument> : IRepository<TEntity>
         });
 
     public Result<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate) =>
-        Try(() => Result<IEnumerable<TEntity>>.Success(
+        Try.Run(() => Result<IEnumerable<TEntity>>.Success(
             GetHashSet(_db.Get()).AsQueryable().Where(predicate).AsEnumerable()));
 
     public Result<bool> Exists(Expression<Func<TEntity, bool>> predicate) =>
-        Try(() => Result<bool>.Success(GetHashSet(_db.Get()).AsQueryable().Any(predicate)));
+        Try.Run(() => Result<bool>.Success(GetHashSet(_db.Get()).AsQueryable().Any(predicate)));
 
     public Result<TEntity> Add(TEntity entity) =>
-        Try(() =>
+        Try.Run(() =>
         {
             var added = GetHashSet(_db.Get()).Add(entity);
             return added ? entity :  Errors.AddFailedError<TEntity>(entity);
         });
     
     public Result<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities) =>
-        Try(() =>
+        Try.Run(() =>
         {
             var set = GetHashSet(_db.Get());
             foreach (var entity in entities)
@@ -55,14 +55,14 @@ public class FileRepository<TEntity, TDocument> : IRepository<TEntity>
         });
     
     public Result<TEntity> Remove(TEntity entity) =>
-        Try(() =>
+        Try.Run(() =>
         {
             var removed = GetHashSet(_db.Get()).Remove(entity);
             return removed ? entity : Errors.RemoveFailedError<TEntity>(entity);
         });
     
     public Result<IEnumerable<TEntity>> RemoveRange(IEnumerable<TEntity> entities) =>
-        Try(() =>
+        Try.Run(() =>
         {
             var set = GetHashSet(_db.Get());
             foreach (var entity in entities)
@@ -76,21 +76,9 @@ public class FileRepository<TEntity, TDocument> : IRepository<TEntity>
     public Result<TEntity> Update(TEntity entity) => Result<TEntity>.Success(entity);
 
     public Result<bool> SaveChanges() => 
-        Try(() =>
+        Try.Run(() =>
         {
             _db.Write();
             return Result<bool>.Success(true);
         });
-
-    private static Result<T> Try<T>(Func<Result<T>> operation) where T : notnull
-    {
-        try
-        {
-            return operation();
-        }
-        catch (Exception ex)
-        {
-            return Result<T>.Failure(Error.Exception(ex));
-        }
-    }
 }
