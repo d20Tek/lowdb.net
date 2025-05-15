@@ -10,10 +10,11 @@ public interface IRepositoryAsync<TEntity> where TEntity : class
     public Task<Result<TEntity>> GetByIdAsync<TProperty>(
         Expression<Func<TEntity, TProperty>> idSelector,
         TProperty id,
-        CancellationToken token = default);
+        CancellationToken token = default)
+        where TProperty : notnull;
 
     // Query with predicate
-    Task<Result<IEnumerable<TEntity>>> FindAsync(
+    Task < Result<IEnumerable<TEntity>>> FindAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken token = default);
 
@@ -35,7 +36,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : class
         CancellationToken token = default);
 
     // Update an entity
-    Task<Result<TEntity>> UpdateAsync(TEntity entity);
+    Task<Result<TEntity>> UpdateAsync(TEntity entity, CancellationToken token = default);
 
     // Save changes (allows multiple batched changes per save)
     Task<Result<bool>> SaveChangesAsync(CancellationToken token = default);
