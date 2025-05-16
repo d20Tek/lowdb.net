@@ -39,6 +39,29 @@ public static class TaskEndpointsV2
         })
         .WithName("CreateTask.V2")
         .WithOpenApi();
+
+        group.MapPut("/{id}", async (int id, UpdateTaskRequest request, ITasksRepository repo) =>
+        {
+            var result = await repo.GetByIdAsync(t => t.Id, id)
+                                   .MapAsync(prev => ChangeTaskEntity(prev, request))
+                                   .BindAsync(updated => repo.UpdateAsync(updated))
+                                   .IterAsync(_ => repo.SaveChangesAsync());
+
+            return result.ToApiResult();
+        })
+        .WithName("UpdateTask.V2")
+        .WithOpenApi();
+
+        group.MapDelete("/{id}", async (int id, ITasksRepository repo) =>
+        {
+            var result = await repo.GetByIdAsync(t => t.Id, id)
+                                   .BindAsync(task => repo.RemoveAsync(task))
+                                   .IterAsync(_ => repo.SaveChangesAsync());
+
+            return result.ToApiResult();
+        })
+        .WithName("DeleteTask.V2")
+        .WithOpenApi();
     }
 
     private static async Task<TaskEntity> CreateTaskEntity(CreateTaskRequest request, LowDbAsync<TasksDocument> db)
@@ -50,5 +73,13 @@ public static class TaskEndpointsV2
             Name = request.Name,
             IsCompleted = false
         };
+    }
+
+    private static Task<TaskEntity> ChangeTaskEntity(TaskEntity task, UpdateTaskRequest updates)
+    {
+        task.Name = updates.Name;
+        task.IsCompleted = updates.IsCompleted;
+
+        return Task.FromResult(task);
     }
 }
