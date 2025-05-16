@@ -1,7 +1,7 @@
 # LowDb.Net Release Notes
 These are the release notes for each major release of the LowDb.Net package:
 
-## Release 1.2.1
+## Release 1.2.2
 Added Repository pattern for LowDb databases
 
 - Created new package for people that want to use repository pattern with LowDb (D20Tek.LowDb.Repositories).
@@ -10,6 +10,9 @@ Added Repository pattern for LowDb databases
 - Added unit tests for both repository implementations.
 - Updated Sample.WebApi to provide v2 endpoints that use the IRepositoryAsync to persist data rather than direct LowDbAsync calls.
   
+## Release 1.2.0
+Update LowDb packages to .NET9.
+
 ## Release 1.1.0
 WebStorage based storage adapters (for local and session storage)
 

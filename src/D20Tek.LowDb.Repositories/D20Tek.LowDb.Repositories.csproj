@@ -8,6 +8,7 @@
     <Title>LowDb Repositories</Title>
     <Company>d20Tek</Company>
     <Authors>d20Tek</Authors>
+    <PackageId>LowDb.Net.Repositories</PackageId>
     <Description>A .NET implementation of the LowDB file-based database for use in applications and experiments that only require a minimal database implementation. Supports JSON-based database in web storage.
 This extension provides the Repository pattern over a LowDb database.</Description>
     <Copyright>Copyright (c) d20Tek.  All rights reserved.</Copyright>
