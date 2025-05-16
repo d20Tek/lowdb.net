@@ -21,14 +21,6 @@ public static class TaskEndpoints
         .WithName("GetAllTasks")
         .WithOpenApi();
 
-        //group.MapGet("/", async (ITasksRepository repo) =>
-        //{
-        //    var tasksResult = await repo.GetAllAsync();
-        //    return tasksResult.ToApiResult();
-        //})
-        //.WithName("GetAllTasks")
-        //.WithOpenApi();
-
         group.MapGet("/{id}", async (int id, LowDbAsync<TasksDocument> db) =>
         {
             var taskDoc = await db.Get();
