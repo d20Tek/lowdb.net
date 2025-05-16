@@ -1,9 +1,11 @@
 ﻿//---------------------------------------------------------------------------------------------------------------------
 // Copyright (c) d20Tek.  All rights reserved.
 //---------------------------------------------------------------------------------------------------------------------
+using D20Tek.LowDb.Repositories;
+
 namespace Sample.WebApi.Endpoints;
 
-internal class TasksDocument
+internal class TasksDocument : DbDocument
 {
     public int LastId { get; set; } = 0;
 

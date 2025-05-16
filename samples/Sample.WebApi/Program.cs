@@ -14,6 +14,7 @@ builder.Services.AddLowDbAsync<TasksDocument>(b =>
     b.UseFileDatabase("tasks.json")
      .WithFolder("data")
      .WithLifetime(ServiceLifetime.Scoped));
+builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 
 var app = builder.Build();
 
@@ -26,5 +27,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapTaskEntityEndpoints();
+app.MapTaskV2Endpoints();
 
 app.Run();

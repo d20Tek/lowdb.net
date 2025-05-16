@@ -1,6 +1,7 @@
 ﻿//---------------------------------------------------------------------------------------------------------------------
 // Copyright (c) d20Tek.  All rights reserved.
 //---------------------------------------------------------------------------------------------------------------------
+using D20Tek.Functional.AspNetCore.MinimalApi;
 using D20Tek.LowDb;
 
 namespace Sample.WebApi.Endpoints;
@@ -12,13 +13,21 @@ public static class TaskEndpoints
         var group = routes.MapGroup("/api/v1/tasks")
                           .WithTags("Tasks");
 
-        group.MapGet("/", async (LowDbAsync<TasksDocument> db) =>
+        group.MapGet("/", async (ITasksRepository repo) =>
         {
-            var taskDoc = await db.Get();
-            return taskDoc.Tasks;
+            var tasksResult = await repo.GetAllAsync();
+            return tasksResult.ToApiResult();
         })
         .WithName("GetAllTasks")
         .WithOpenApi();
+
+        //group.MapGet("/", async (ITasksRepository repo) =>
+        //{
+        //    var tasksResult = await repo.GetAllAsync();
+        //    return tasksResult.ToApiResult();
+        //})
+        //.WithName("GetAllTasks")
+        //.WithOpenApi();
 
         group.MapGet("/{id}", async (int id, LowDbAsync<TasksDocument> db) =>
         {
