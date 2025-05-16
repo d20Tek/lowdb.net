@@ -1,5 +1,6 @@
 ﻿using D20Tek.Functional;
 using D20Tek.Functional.Async;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
 namespace D20Tek.LowDb.Repositories;
@@ -48,7 +49,8 @@ public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity
     public async Task<Result<TEntity>> AddAsync(TEntity entity, CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
         {
-            var added = GetHashSet(await _db.Get(token)).Add(entity);
+            var doc = await _db.Get(token);
+            var added = GetHashSet(doc).Add(entity);
             return added ? entity :  Errors.AddFailedError<TEntity>(entity);
         });
     

@@ -50,6 +50,7 @@ public class LowDbAsync<T>
         if (_isLoaded is false)
         {
             await Read(token);
+            _isLoaded = true;
         }
     }
 }
