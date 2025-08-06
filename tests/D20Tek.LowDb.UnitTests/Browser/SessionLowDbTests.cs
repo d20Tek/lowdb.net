@@ -76,8 +76,6 @@ public class SessionLowDbTests
     }
 
     [TestMethod]
-    [ExcludeFromCodeCoverage]
-    [ExpectedException(typeof(ArgumentException))]
     public void Write_WithEmptyKeyname_ThrowsException()
     {
         // arrange
@@ -85,9 +83,7 @@ public class SessionLowDbTests
         var db = new LowDb<TestDocument>(adapter);
 
         // act
-        db.Write();
-
-        // assert
+        Assert.Throws<ArgumentException>([ExcludeFromCodeCoverage] () => db.Write());
     }
 
 

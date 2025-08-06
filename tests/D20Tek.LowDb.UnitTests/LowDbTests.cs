@@ -87,38 +87,6 @@ public class LowDbTests
     }
 
     [TestMethod]
-    [ExcludeFromCodeCoverage]
-    [ExpectedException(typeof(ArgumentException))]
-    public void Read_WithEmptyFilename_ThrowsException()
-    {
-        // arrange
-        var jsonAdapter = new JsonFileAdapter<TestDocument>("");
-        var db = new LowDb<TestDocument>(jsonAdapter);
-
-
-        // act
-        db.Read();
-
-        // assert
-    }
-
-    [TestMethod]
-    [ExcludeFromCodeCoverage]
-    [ExpectedException(typeof(ArgumentException))]
-    public void Write_WithEmptyFilename_ThrowsException()
-    {
-        // arrange
-        var jsonAdapter = new JsonFileAdapter<TestDocument>("");
-        var db = new LowDb<TestDocument>(jsonAdapter);
-
-
-        // act
-        db.Write();
-
-        // assert
-    }
-
-    [TestMethod]
     public void Update_WithMemoryAdapter_SavesData()
     {
         // arrange

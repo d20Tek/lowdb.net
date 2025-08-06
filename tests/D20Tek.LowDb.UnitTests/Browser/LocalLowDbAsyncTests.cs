@@ -76,8 +76,6 @@ public class LocalLowDbAsyncTests
     }
 
     [TestMethod]
-    [ExcludeFromCodeCoverage]
-    [ExpectedException(typeof(ArgumentException))]
     public async Task Write_WithEmptyKeyname_ThrowsException()
     {
         // arrange
@@ -85,9 +83,7 @@ public class LocalLowDbAsyncTests
         var db = new LowDbAsync<TestDocument>(adapter);
 
         // act
-        await db.Write();
-
-        // assert
+        await Assert.ThrowsAsync<ArgumentException>([ExcludeFromCodeCoverage] () => db.Write());
     }
 
 

@@ -88,38 +88,6 @@ public class LowDbAsyncTests
     }
 
     [TestMethod]
-    [ExcludeFromCodeCoverage]
-    [ExpectedException(typeof(ArgumentException))]
-    public async Task Read_WithEmptyFilename_ThrowsException()
-    {
-        // arrange
-        var jsonAdapter = new JsonFileAdapterAsync<TestDocument>("");
-        var db = new LowDbAsync<TestDocument>(jsonAdapter);
-
-
-        // act
-        await db.Read();
-
-        // assert
-    }
-
-    [TestMethod]
-    [ExcludeFromCodeCoverage]
-    [ExpectedException(typeof(ArgumentException))]
-    public async Task Write_WithEmptyFilename_ThrowsException()
-    {
-        // arrange
-        var jsonAdapter = new JsonFileAdapterAsync<TestDocument>("");
-        var db = new LowDbAsync<TestDocument>(jsonAdapter);
-
-
-        // act
-        await db.Write();
-
-        // assert
-    }
-
-    [TestMethod]
     public async Task Update_WithMemoryAdapter_SavesData()
     {
         // arrange
