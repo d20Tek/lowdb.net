@@ -28,8 +28,7 @@ public class LowDbFactoryTests
         // arrange
 
         // act
-        var db = LowDbFactory.CreateLowDb<TestDocument>(b =>
-                b.UseFileDatabase("test.json"));
+        var db = LowDbFactory.CreateLowDb<TestDocument>(b => b.UseFileDatabase("test.json"));
 
         // assert
         db.Should().NotBeNull();
@@ -42,8 +41,7 @@ public class LowDbFactoryTests
         // arrange
 
         // act
-        var db = LowDbFactory.CreateLowDb<TestDocument>(b =>
-                b.UseInMemoryDatabase());
+        var db = LowDbFactory.CreateLowDb<TestDocument>(b => b.UseInMemoryDatabase());
 
         // assert
         db.Should().NotBeNull();
@@ -60,8 +58,8 @@ public class LowDbFactoryTests
 
         // assert
         db.Should().NotBeNull();
-        var result = await db.Get();
-        result.Entities.Should().HaveCount(0);
+        var result = await db.Get(TestContext.CancellationToken);
+        result.Entities.Should().BeEmpty();
     }
 
     [TestMethod]
@@ -76,8 +74,8 @@ public class LowDbFactoryTests
 
         // assert
         db.Should().NotBeNull();
-        var result = await db.Get();
-        result.Entities.Should().HaveCount(0);
+        var result = await db.Get(TestContext.CancellationToken);
+        result.Entities.Should().BeEmpty();
     }
 
     [TestMethod]
@@ -91,7 +89,9 @@ public class LowDbFactoryTests
 
         // assert
         db.Should().NotBeNull();
-        var result = await db.Get();
+        var result = await db.Get(TestContext.CancellationToken);
         result.Entities.Should().HaveCount(0);
     }
+
+    public TestContext TestContext { get; set; }
 }

@@ -4,7 +4,6 @@
 using D20Tek.LowDb.Adapters;
 using D20Tek.LowDb.UnitTests.Entities;
 using FluentAssertions;
-using System.Diagnostics.CodeAnalysis;
 
 namespace D20Tek.LowDb.UnitTests;
 
@@ -168,7 +167,7 @@ public class LowDbTests
 
         // assert
         result.Should().NotBeNull();
-        result.Any().Should().BeFalse();
+        result.Should().BeEmpty();
     }
 
     [TestMethod]
@@ -178,7 +177,7 @@ public class LowDbTests
         var jsonAdapter = new JsonFileAdapter<List<Guid>>("batch-test-file.json");
         var db = new LowDb<List<Guid>>(jsonAdapter);
 
-        List<Guid> expected = new();
+        List<Guid> expected = [];
 
         // act
         db.Update(x =>

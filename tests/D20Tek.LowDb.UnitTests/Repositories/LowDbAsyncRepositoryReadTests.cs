@@ -13,7 +13,7 @@ public class LowDbAsyncRepositoryReadTests
         var repo = InitializeTestsRepository();
 
         // act
-        var result = await repo.GetAllAsync();
+        var result = await repo.GetAllAsync(TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
@@ -29,7 +29,7 @@ public class LowDbAsyncRepositoryReadTests
         var repo = InitializeTestsRepository();
 
         // act
-        var result = await repo.GetByIdAsync(e => e.Id, 2);
+        var result = await repo.GetByIdAsync(e => e.Id, 2, TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
@@ -43,7 +43,7 @@ public class LowDbAsyncRepositoryReadTests
         var repo = InitializeTestsRepository();
 
         // act
-        var result = await repo.GetByIdAsync(e => e.Id, 99);
+        var result = await repo.GetByIdAsync(e => e.Id, 99, TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsFailure);
@@ -57,7 +57,7 @@ public class LowDbAsyncRepositoryReadTests
         var repo = InitializeTestsRepository();
 
         // act
-        var result = await repo.FindAsync(e => e.Name == "Test 3");
+        var result = await repo.FindAsync(e => e.Name == "Test 3", TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
@@ -73,7 +73,7 @@ public class LowDbAsyncRepositoryReadTests
         var repo = InitializeTestsRepository();
 
         // act
-        var result = await repo.FindAsync(e => e.Name == "missing");
+        var result = await repo.FindAsync(e => e.Name == "missing", TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
@@ -88,7 +88,7 @@ public class LowDbAsyncRepositoryReadTests
         var repo = InitializeTestsRepository();
 
         // act
-        var result = await repo.ExistsAsync(e => e.Name == "Test 3");
+        var result = await repo.ExistsAsync(e => e.Name == "Test 3", TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
@@ -102,7 +102,7 @@ public class LowDbAsyncRepositoryReadTests
         var repo = InitializeTestsRepository();
 
         // act
-        var result = await repo.ExistsAsync(e => e.Id == 99);
+        var result = await repo.ExistsAsync(e => e.Id == 99, TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
@@ -116,7 +116,7 @@ public class LowDbAsyncRepositoryReadTests
         var repo = InitializeTestsRepository();
 
         // act
-        var result = await repo.ExistsAsync(e => (e.Id / 0) > 1 );
+        var result = await repo.ExistsAsync(e => (e.Id / 0) > 1 , TestContext.CancellationToken);
 
         // assert
         Assert.IsFalse(result.IsSuccess);
@@ -137,4 +137,6 @@ public class LowDbAsyncRepositoryReadTests
         var db = new LowDbAsync<TestsRepositoryAsync.Document>(adapter, document);
         return new TestsRepositoryAsync(db);
     }
+
+    public TestContext TestContext { get; set; }
 }

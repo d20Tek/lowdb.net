@@ -35,7 +35,6 @@ public class LocalLowDbTests
         // arrange
         var adapter = new LocalStorageAdapter<TestDocument>("update-test-entry", _storage);
         var db = new LowDb<TestDocument>(adapter);
-
         var id = -1;
 
         // act
@@ -65,7 +64,6 @@ public class LocalLowDbTests
         // arrange
         var adapter = new LocalStorageAdapter<TestDocument>("empty-key", _storage);
         var db = new LowDb<TestDocument>(adapter);
-
         var id = -1;
 
         // act
@@ -79,7 +77,7 @@ public class LocalLowDbTests
     public void Write_WithEmptyKeyname_ThrowsException()
     {
         // arrange
-        var adapter = new LocalStorageAdapter<TestDocument>("", _storage);
+        var adapter = new LocalStorageAdapter<TestDocument>(string.Empty, _storage);
         var db = new LowDb<TestDocument>(adapter);
 
         // act
@@ -93,7 +91,6 @@ public class LocalLowDbTests
         // arrange
         var adapter = new LocalStorageAdapter<List<TestEntity>>("update-list-test-key", _storage);
         var db = new LowDb<List<TestEntity>>(adapter);
-
         var id = -1;
 
         // act
@@ -123,7 +120,6 @@ public class LocalLowDbTests
         // arrange
         var adapter = new LocalStorageAdapter<List<Guid>>("nonautosave-test-key", _storage);
         var db = new LowDb<List<Guid>>(adapter);
-
         Guid guid = Guid.Empty;
 
         // act
@@ -148,7 +144,6 @@ public class LocalLowDbTests
         // arrange
         var adapter = new LocalStorageAdapter<List<Guid>>("batch-test-key", _storage);
         var db = new LowDb<List<Guid>>(adapter);
-
         List<Guid> expected = [];
 
         // act

@@ -7,14 +7,10 @@ namespace D20Tek.LowDb.UnitTests.Fakes;
 internal class FakeJSRuntime : IJSRuntime
 {
     public ValueTask<TValue> InvokeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)] TValue>
-        (string identifier, object?[]? args)
-    {
+        (string identifier, object?[]? args) =>
         throw new NotImplementedException();
-    }
 
     public ValueTask<TValue> InvokeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)] TValue>
-        (string identifier, CancellationToken cancellationToken, object?[]? args)
-    {
+        (string identifier, CancellationToken cancellationToken, object?[]? args) =>
         throw new NotImplementedException();
-    }
 }

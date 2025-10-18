@@ -61,7 +61,8 @@ internal class FakeSessionStorage : ISyncSessionStorageService, ISessionStorageS
 
     public int Length() => _storage.Count;
 
-    public ValueTask<int> LengthAsync(CancellationToken cancellationToken = default) => ValueTask.FromResult(_storage.Count);
+    public ValueTask<int> LengthAsync(CancellationToken cancellationToken = default) =>
+        ValueTask.FromResult(_storage.Count);
 
     public void RemoveItem(string key) => _storage.Remove(key);
 

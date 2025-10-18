@@ -4,7 +4,6 @@
 using D20Tek.LowDb.Adapters;
 using D20Tek.LowDb.UnitTests.Entities;
 using FluentAssertions;
-using System.Diagnostics.CodeAnalysis;
 
 namespace D20Tek.LowDb.UnitTests;
 
@@ -19,8 +18,8 @@ public class LowDbAsyncTests
         var db = new LowDbAsync<TestDocument>(jsonAdapter);
 
         // act
-        await db.Read();
-        var result = await db.Get();
+        await db.Read(TestContext.CancellationToken);
+        var result = await db.Get(TestContext.CancellationToken);
 
         // assert
         result.Entities.Should().BeEmpty();
@@ -34,7 +33,7 @@ public class LowDbAsyncTests
         var db = new LowDbAsync<TestDocument>(jsonAdapter);
 
         // act
-        await db.Write();
+        await db.Write(TestContext.CancellationToken);
 
         // assert
     }
@@ -45,8 +44,7 @@ public class LowDbAsyncTests
         // arrange
         var jsonAdapter = new JsonFileAdapterAsync<TestDocument>("async-update-test-file.json");
         var db = new LowDbAsync<TestDocument>(jsonAdapter);
-        await db.Write();
-
+        await db.Write(TestContext.CancellationToken);
         var id = -1;
 
         // act
@@ -60,7 +58,7 @@ public class LowDbAsyncTests
                 Description = "test desc.",
                 Flag = true
             });
-        });
+        }, token: TestContext.CancellationToken);
 
         await db.Read();
         var result = await db.Get();
@@ -77,11 +75,10 @@ public class LowDbAsyncTests
         var tempFile = Path.GetTempFileName();
         var jsonAdapter = new JsonFileAdapterAsync<TestDocument>(Path.GetFileName(tempFile));
         var db = new LowDbAsync<TestDocument>(jsonAdapter);
-
         var id = -1;
 
         // act
-        await db.Update(x => id = x.LastId);
+        await db.Update(x => id = x.LastId, token: TestContext.CancellationToken);
 
         // assert
         id.Should().Be(0);
@@ -93,7 +90,6 @@ public class LowDbAsyncTests
         // arrange
         var jsonAdapter = new MemoryStorageAdapterAsync<TestDocument>();
         var db = new LowDbAsync<TestDocument>(jsonAdapter);
-
         var id = -1;
 
         // act
@@ -107,7 +103,7 @@ public class LowDbAsyncTests
                 Description = "test desc.",
                 Flag = true
             });
-        });
+        }, token: TestContext.CancellationToken);
 
         await db.Read();
         var result = await db.Get();
@@ -123,7 +119,6 @@ public class LowDbAsyncTests
         // arrange
         var jsonAdapter = new JsonFileAdapterAsync<List<Guid>>("async-nonautosave-test-file.json");
         var db = new LowDbAsync<List<Guid>>(jsonAdapter);
-
         Guid guid = Guid.Empty;
 
         // act
@@ -132,14 +127,15 @@ public class LowDbAsyncTests
             guid = Guid.NewGuid();
             x.Add(guid);
         },
-        false);
+        false,
+        TestContext.CancellationToken);
 
-        await db.Read();
-        var result = await db.Get();
+        await db.Read(TestContext.CancellationToken);
+        var result = await db.Get(TestContext.CancellationToken);
 
         // assert
         result.Should().NotBeNull();
-        result.Any().Should().BeFalse();
+        result.Should().BeEmpty();
     }
 
     [TestMethod]
@@ -148,8 +144,7 @@ public class LowDbAsyncTests
         // arrange
         var jsonAdapter = new JsonFileAdapterAsync<List<Guid>>("async-batch-test-file.json");
         var db = new LowDbAsync<List<Guid>>(jsonAdapter);
-
-        List<Guid> expected = new();
+        List<Guid> expected = [];
 
         // act
         await db.Update(x =>
@@ -158,14 +153,15 @@ public class LowDbAsyncTests
             expected.Add(guid);
             x.Add(guid);
         },
-        false);
+        false,
+        TestContext.CancellationToken);
 
         // delayed save.
-        await db.Write();
+        await db.Write(TestContext.CancellationToken);
 
         // force a reload from file.
-        await db.Read();
-        var result = await db.Get();
+        await db.Read(TestContext.CancellationToken);
+        var result = await db.Get(TestContext.CancellationToken);
 
         // assert
         result.Should().NotBeNull();
@@ -192,10 +188,12 @@ public class LowDbAsyncTests
         var db = new LowDbAsync<TestDocument>(adapter, document);
 
         // act
-        var result = await db.Get();
+        var result = await db.Get(TestContext.CancellationToken);
 
         // assert
         result.Entities.Should().NotBeEmpty();
         result.Entities.Any(x => x.Id == 3).Should().BeTrue();
     }
+
+    public TestContext TestContext { get; set; }
 }

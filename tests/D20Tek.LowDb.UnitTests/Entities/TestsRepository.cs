@@ -5,14 +5,13 @@ namespace D20Tek.LowDb.UnitTests.Entities;
 
 internal interface ITestsRepository : IRepository<TestEntity>;
 
-internal sealed class TestsRepository : LowDbRepository<TestEntity, TestsRepository.Document>, ITestsRepository
+internal sealed class TestsRepository(LowDb<TestsRepository.Document> db) :
+    LowDbRepository<TestEntity, TestsRepository.Document>(db, doc => doc.Tests), ITestsRepository
 {
     [ExcludeFromCodeCoverage]
-    public class Foo
+    public class Foo(string id)
     {
-        public string Id { get; }
-
-        public Foo(string id) => Id = id;
+        public string Id { get; } = id;
     }
 
     public class Document : DbDocument
@@ -21,6 +20,4 @@ internal sealed class TestsRepository : LowDbRepository<TestEntity, TestsReposit
 
         public HashSet<Foo> Foos { get; set; } = [];
     }
-
-    public TestsRepository(LowDb<Document> db) : base(db, doc => doc.Tests) { }
 }

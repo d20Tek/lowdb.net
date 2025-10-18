@@ -17,7 +17,6 @@ public class LowDbRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_addTestFile);
-
         var id = Guid.NewGuid().GetHashCode();
 
         // act
@@ -69,7 +68,6 @@ public class LowDbRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_addTestFile);
-
         var id = Guid.NewGuid().GetHashCode();
 
         // act

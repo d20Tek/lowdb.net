@@ -5,15 +5,13 @@ namespace D20Tek.LowDb.UnitTests.Entities;
 
 internal interface ITestsRepositoryAsync : IRepositoryAsync<TestEntity>;
 
-internal sealed class TestsRepositoryAsync :
-    LowDbAsyncRepository<TestEntity, TestsRepositoryAsync.Document>, ITestsRepositoryAsync
+internal sealed class TestsRepositoryAsync(LowDbAsync<TestsRepositoryAsync.Document> db) :
+    LowDbAsyncRepository<TestEntity, TestsRepositoryAsync.Document>(db, doc => doc.Tests), ITestsRepositoryAsync
 {
     [ExcludeFromCodeCoverage]
-    public class Foo
+    public class Foo(string id)
     {
-        public string Id { get; }
-
-        public Foo(string id) => Id = id;
+        public string Id { get; } = id;
     }
 
     public class Document : DbDocument
@@ -22,6 +20,4 @@ internal sealed class TestsRepositoryAsync :
 
         public HashSet<Foo> Foos { get; set; } = [];
     }
-
-    public TestsRepositoryAsync(LowDbAsync<Document> db) : base(db, doc => doc.Tests) { }
 }

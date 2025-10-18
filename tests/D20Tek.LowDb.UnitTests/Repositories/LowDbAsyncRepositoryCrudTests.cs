@@ -17,27 +17,27 @@ public class LowDbAsyncRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_addTestFile);
-
         var id = Guid.NewGuid().GetHashCode();
 
         // act
         var result = await repo.AddAsync(
-            new TestEntity
-                {
-                    Id = id,
-                    Name = "Test entity",
-                    Description = "test desc.",
-                    Flag = true
-                });
+            new()
+            {
+                Id = id,
+                Name = "Test entity",
+                Description = "test desc.",
+                Flag = true
+            },
+            TestContext.CancellationToken);
 
-        _ = await repo.SaveChangesAsync();
+        _ = await repo.SaveChangesAsync(TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
 
         // validate retrieval
         var readRepo = LoadRepository(_addTestFile);
-        var getResult = await readRepo.GetByIdAsync(e => e.Id, id);
+        var getResult = await readRepo.GetByIdAsync(e => e.Id, id, TestContext.CancellationToken);
         Assert.IsTrue(getResult.IsSuccess);
         Assert.AreEqual(id, getResult.GetValue().Id);
     }
@@ -56,8 +56,8 @@ public class LowDbAsyncRepositoryCrudTests
         };
 
         // act
-        var r = await repo.AddAsync(entity);
-        var result = await repo.AddAsync(entity);
+        var r = await repo.AddAsync(entity, TestContext.CancellationToken);
+        var result = await repo.AddAsync(entity, TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsFailure);
@@ -69,25 +69,25 @@ public class LowDbAsyncRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_addTestFile);
-
         var id = Guid.NewGuid().GetHashCode();
 
         // act
         var result = await repo.AddAsync(
-            new TestEntity
+            new()
             {
                 Id = id,
                 Name = "Test entity",
                 Description = "test desc.",
                 Flag = true
-            });
+            },
+            TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
 
         // validate retrieval
         var readRepo = LoadRepository(_addTestFile);
-        var getResult = await readRepo.GetByIdAsync(e => e.Id, id);
+        var getResult = await readRepo.GetByIdAsync(e => e.Id, id, TestContext.CancellationToken);
         Assert.IsTrue(getResult.IsFailure);
     }
 
@@ -104,8 +104,8 @@ public class LowDbAsyncRepositoryCrudTests
         };
 
         // act
-        var result = await repo.AddRangeAsync(tests);
-        _ = await repo.SaveChangesAsync();
+        var result = await repo.AddRangeAsync(tests, TestContext.CancellationToken);
+        _ = await repo.SaveChangesAsync(TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
@@ -113,7 +113,7 @@ public class LowDbAsyncRepositoryCrudTests
 
         // validate retrieval
         var readRepo = LoadRepository(_addRangeTestFile);
-        var getResult = await readRepo.GetByIdAsync(e => e.Id, id);
+        var getResult = await readRepo.GetByIdAsync(e => e.Id, id, TestContext.CancellationToken);
         Assert.IsTrue(getResult.IsSuccess);
         Assert.AreEqual(id, getResult.GetValue().Id);
     }
@@ -132,8 +132,8 @@ public class LowDbAsyncRepositoryCrudTests
         };
 
         // act
-        var r = await repo.AddAsync(entity);
-        var result = await repo.AddRangeAsync([entity]);
+        var r = await repo.AddAsync(entity, TestContext.CancellationToken);
+        var result = await repo.AddRangeAsync([entity], TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsFailure);
@@ -148,15 +148,15 @@ public class LowDbAsyncRepositoryCrudTests
         var addedEntity = await AddTestEntity(repo);
 
         // act
-        var result = await repo.RemoveAsync(addedEntity);
-        _ = await repo.SaveChangesAsync();
+        var result = await repo.RemoveAsync(addedEntity, TestContext.CancellationToken);
+        _ = await repo.SaveChangesAsync(TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
 
         // validate retrieval
         var readRepo = LoadRepository(_removeTestFile);
-        var getResult = await readRepo.GetByIdAsync(e => e.Id, addedEntity.Id);
+        var getResult = await readRepo.GetByIdAsync(e => e.Id, addedEntity.Id, TestContext.CancellationToken);
         Assert.IsFalse(getResult.IsSuccess);
     }
 
@@ -174,7 +174,7 @@ public class LowDbAsyncRepositoryCrudTests
         };
 
         // act
-        var result = await repo.RemoveAsync(entity);
+        var result = await repo.RemoveAsync(entity, TestContext.CancellationToken);
 
         // assert
         Assert.IsFalse(result.IsSuccess);
@@ -189,15 +189,15 @@ public class LowDbAsyncRepositoryCrudTests
         var addedEntity = await AddTestEntity(repo);
 
         // act
-        var result = await repo.RemoveRangeAsync([addedEntity]);
-        _ = await repo.SaveChangesAsync();
+        var result = await repo.RemoveRangeAsync([addedEntity], TestContext.CancellationToken);
+        _ = await repo.SaveChangesAsync(TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
 
         // validate retrieval
         var readRepo = LoadRepository(_removeRangeTestFile);
-        var getResult = await readRepo.GetByIdAsync(e => e.Id, addedEntity.Id);
+        var getResult = await readRepo.GetByIdAsync(e => e.Id, addedEntity.Id, TestContext.CancellationToken);
         Assert.IsFalse(getResult.IsSuccess);
     }
 
@@ -215,7 +215,7 @@ public class LowDbAsyncRepositoryCrudTests
         };
 
         // act
-        var result = await repo.RemoveRangeAsync([entity]);
+        var result = await repo.RemoveRangeAsync([entity], TestContext.CancellationToken);
 
         // assert
         Assert.IsFalse(result.IsSuccess);
@@ -231,15 +231,15 @@ public class LowDbAsyncRepositoryCrudTests
 
         // act
         addedEntity.Name = "Updated";
-        var result = await repo.UpdateAsync(addedEntity);
-        _ = await repo.SaveChangesAsync();
+        var result = await repo.UpdateAsync(addedEntity, TestContext.CancellationToken);
+        _ = await repo.SaveChangesAsync(TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
 
         // validate retrieval
         var readRepo = LoadRepository(_updateTestFile);
-        var getResult = await readRepo.GetByIdAsync(e => e.Id, addedEntity.Id);
+        var getResult = await readRepo.GetByIdAsync(e => e.Id, addedEntity.Id, TestContext.CancellationToken);
         Assert.IsTrue(getResult.IsSuccess);
         Assert.AreEqual("Updated", getResult.GetValue().Name);
     }
@@ -260,9 +260,12 @@ public class LowDbAsyncRepositoryCrudTests
                 Name = "Test entity",
                 Description = "test desc.",
                 Flag = true
-            });
-        _ = await repo.SaveChangesAsync();
+            },
+            CancellationToken.None);
+        _ = await repo.SaveChangesAsync(CancellationToken.None);
 
         return result.GetValue();
     }
+
+    public TestContext TestContext { get; set; }
 }

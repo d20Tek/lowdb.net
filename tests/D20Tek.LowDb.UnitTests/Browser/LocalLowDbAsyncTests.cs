@@ -22,8 +22,8 @@ public class LocalLowDbAsyncTests
         var db = new LowDbAsync<TestDocument>(adapter);
 
         // act
-        await db.Read();
-        var result = await db.Get();
+        await db.Read(TestContext.CancellationToken);
+        var result = await db.Get(TestContext.CancellationToken);
 
         // assert
         result.Entities.Should().BeEmpty();
@@ -35,7 +35,6 @@ public class LocalLowDbAsyncTests
         // arrange
         var adapter = new LocalStorageAdapterAsync<TestDocument>("update-test-entry", _storage);
         var db = new LowDbAsync<TestDocument>(adapter);
-
         var id = -1;
 
         // act
@@ -49,10 +48,11 @@ public class LocalLowDbAsyncTests
                 Description = "test desc.",
                 Flag = true
             });
-        });
+        },
+        token: TestContext.CancellationToken);
 
-        await db.Read();
-        var result = await db.Get();
+        await db.Read(TestContext.CancellationToken);
+        var result = await db.Get(TestContext.CancellationToken);
 
         // assert
         result.Should().NotBeNull();
@@ -65,11 +65,10 @@ public class LocalLowDbAsyncTests
         // arrange
         var adapter = new LocalStorageAdapterAsync<TestDocument>("empty-key", _storage);
         var db = new LowDbAsync<TestDocument>(adapter);
-
         var id = -1;
 
         // act
-        await db.Update(x => id = x.LastId);
+        await db.Update(x => id = x.LastId, token: TestContext.CancellationToken);
 
         // assert
         id.Should().Be(0);
@@ -79,11 +78,12 @@ public class LocalLowDbAsyncTests
     public async Task Write_WithEmptyKeyname_ThrowsException()
     {
         // arrange
-        var adapter = new LocalStorageAdapterAsync<TestDocument>("", _storage);
+        var adapter = new LocalStorageAdapterAsync<TestDocument>(string.Empty, _storage);
         var db = new LowDbAsync<TestDocument>(adapter);
 
         // act
-        await Assert.ThrowsAsync<ArgumentException>([ExcludeFromCodeCoverage] () => db.Write());
+        await Assert.ThrowsAsync<ArgumentException>(
+            [ExcludeFromCodeCoverage] () => db.Write(TestContext.CancellationToken));
     }
 
 
@@ -93,7 +93,6 @@ public class LocalLowDbAsyncTests
         // arrange
         var adapter = new LocalStorageAdapterAsync<List<TestEntity>>("update-list-test-key", _storage);
         var db = new LowDbAsync<List<TestEntity>>(adapter);
-
         var id = -1;
 
         // act
@@ -107,10 +106,11 @@ public class LocalLowDbAsyncTests
                 Description = "test desc.",
                 Flag = true
             });
-        });
+        },
+        token: TestContext.CancellationToken);
 
-        await db.Read();
-        var result = await db.Get();
+        await db.Read(TestContext.CancellationToken);
+        var result = await db.Get(TestContext.CancellationToken);
 
         // assert
         result.Should().NotBeNull();
@@ -132,10 +132,11 @@ public class LocalLowDbAsyncTests
             guid = Guid.NewGuid();
             x.Add(guid);
         },
-        false);
+        false,
+        TestContext.CancellationToken);
 
-        await db.Read();
-        var result = await db.Get();
+        await db.Read(TestContext.CancellationToken);
+        var result = await db.Get(TestContext.CancellationToken);
 
         // assert
         result.Should().NotBeNull();
@@ -148,8 +149,7 @@ public class LocalLowDbAsyncTests
         // arrange
         var adapter = new LocalStorageAdapterAsync<List<Guid>>("batch-test-key", _storage);
         var db = new LowDbAsync<List<Guid>>(adapter);
-
-        List<Guid> expected = new();
+        List<Guid> expected = [];
 
         // act
         await db.Update(x =>
@@ -158,17 +158,20 @@ public class LocalLowDbAsyncTests
             expected.Add(guid);
             x.Add(guid);
         },
-        false);
+        false,
+        TestContext.CancellationToken);
 
         // delayed save.
-        await db.Write();
+        await db.Write(TestContext.CancellationToken);
 
         // force a reload from file.
-        await db.Read();
-        var result = await db.Get();
+        await db.Read(TestContext.CancellationToken);
+        var result = await db.Get(TestContext.CancellationToken);
 
         // assert
         result.Should().NotBeNull();
         result.Should().Contain(expected);
     }
+
+    public TestContext TestContext { get; set; }
 }
