@@ -3,18 +3,14 @@ using System.Linq.Expressions;
 
 namespace D20Tek.LowDb.Repositories;
 
-public class LowDbRepository<TEntity, TDocument> : IRepository<TEntity>
+public class LowDbRepository<TEntity, TDocument>(
+    LowDb<TDocument> db,
+    Expression<Func<TDocument, HashSet<TEntity>>> setSelector) : IRepository<TEntity>
     where TEntity : class
     where TDocument : DbDocument, new()
 {
-    private readonly LowDb<TDocument> _db;
-    private readonly Func<TDocument, HashSet<TEntity>> GetHashSet;
-
-    public LowDbRepository(LowDb<TDocument> db, Expression<Func<TDocument, HashSet<TEntity>>> setSelector)
-    {
-        _db = db;
-        GetHashSet = setSelector.Compile();
-    }
+    private readonly LowDb<TDocument> _db = db;
+    private readonly Func<TDocument, HashSet<TEntity>> GetHashSet = setSelector.Compile();
 
     public Result<IEnumerable<TEntity>> GetAll() =>
         Try.Run(() => Result<IEnumerable<TEntity>>.Success(GetHashSet(_db.Get()).AsEnumerable()));
@@ -39,7 +35,7 @@ public class LowDbRepository<TEntity, TDocument> : IRepository<TEntity>
         Try.Run(() =>
         {
             var added = GetHashSet(_db.Get()).Add(entity);
-            return added ? entity :  Errors.AddFailedError<TEntity>(entity);
+            return added ? entity : Errors.AddFailedError<TEntity>(entity);
         });
     
     public Result<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities) =>

@@ -5,23 +5,17 @@ using Blazored.SessionStorage;
 
 namespace D20Tek.LowDb.Browser.Adapters;
 
-public class SessionStorageAdapterAsync<T> : IStorageAdapterAsync<T>
+public class SessionStorageAdapterAsync<T>(string keyname, ISessionStorageService storage) : IStorageAdapterAsync<T>
     where T : class
 {
-    private readonly string _keyname;
-    private readonly ISessionStorageService _storage;
-
-    public SessionStorageAdapterAsync(string keyname, ISessionStorageService storage)
-    {
-        _keyname = keyname;
-        _storage = storage;
-    }
+    private readonly string _keyname = keyname;
+    private readonly ISessionStorageService _storage = storage;
 
     public async Task<T?> Read(CancellationToken token = default) => await _storage.GetItemAsync<T>(_keyname, token);
 
     public async Task Write(T data, CancellationToken token = default)
     {
-        if (string.IsNullOrEmpty(_keyname)) throw new ArgumentException("keyname");
+        ArgumentNullException.ThrowIfNullOrEmpty(_keyname, "keyname");
         await _storage.SetItemAsync<T>(_keyname, data, token);
     }
 }

@@ -4,18 +4,14 @@ using System.Linq.Expressions;
 
 namespace D20Tek.LowDb.Repositories;
 
-public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity>
+public class LowDbAsyncRepository<TEntity, TDocument>(
+    LowDbAsync<TDocument> db,
+    Expression<Func<TDocument, HashSet<TEntity>>> setSelector) : IRepositoryAsync<TEntity>
     where TEntity : class
     where TDocument : DbDocument, new()
 {
-    private readonly LowDbAsync<TDocument> _db;
-    private readonly Func<TDocument, HashSet<TEntity>> GetHashSet;
-
-    public LowDbAsyncRepository(LowDbAsync<TDocument> db, Expression<Func<TDocument, HashSet<TEntity>>> setSelector)
-    {
-        _db = db;
-        GetHashSet = setSelector.Compile();
-    }
+    private readonly LowDbAsync<TDocument> _db = db;
+    private readonly Func<TDocument, HashSet<TEntity>> GetHashSet = setSelector.Compile();
 
     public async Task<Result<IEnumerable<TEntity>>> GetAllAsync(CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
@@ -50,7 +46,7 @@ public class LowDbAsyncRepository<TEntity, TDocument> : IRepositoryAsync<TEntity
         {
             var doc = await _db.Get(token);
             var added = GetHashSet(doc).Add(entity);
-            return added ? entity :  Errors.AddFailedError<TEntity>(entity);
+            return added ? entity : Errors.AddFailedError<TEntity>(entity);
         });
     
     public async Task<Result<IEnumerable<TEntity>>> AddRangeAsync(
