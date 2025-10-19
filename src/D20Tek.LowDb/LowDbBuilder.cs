@@ -55,7 +55,7 @@ public class LowDbBuilder
             adapter = new JsonFileAdapter<T>(fullname);
         }
 
-        return new LowDb<T>(adapter);
+        return new(adapter);
     }
 
     public LowDbAsync<T> BuildAsync<T>()
@@ -73,6 +73,6 @@ public class LowDbBuilder
             adapter = new JsonFileAdapterAsync<T>(fullname);
         }
 
-        return new LowDbAsync<T>(adapter);
+        return new(adapter);
     }
 }

@@ -3,39 +3,25 @@
 //---------------------------------------------------------------------------------------------------------------------
 namespace D20Tek.LowDb.Adapters;
 
-public class TextFileAdapterAsync : IStorageAdapterAsync<string>
+public class TextFileAdapterAsync(string filename) : IStorageAdapterAsync<string>
 {
-    private readonly string _filename;
-
-    public TextFileAdapterAsync(string filename)
-    {
-        _filename = filename;
-    }
+    private readonly string _filename = filename;
 
     public async Task<string?> Read(CancellationToken token = default)
     {
-        var folder = Path.GetDirectoryName(_filename);
-
-        EnsureFolderExists(folder);
-        if (File.Exists(_filename) is false)
-        {
-            return null;
-        }
-
-        var text = await File.ReadAllTextAsync(_filename, token);
-        return text;
+        EnsureFolderExists();
+        return File.Exists(_filename) is false ? null : await File.ReadAllTextAsync(_filename, token);
     }
 
     public async Task Write(string data, CancellationToken token = default)
     {
-        var folder = Path.GetDirectoryName(_filename);
-
-        EnsureFolderExists(folder);
+        EnsureFolderExists();
         await File.WriteAllTextAsync(_filename, data, token);
     }
 
-    public void EnsureFolderExists(string? folderPath)
+    public void EnsureFolderExists()
     {
+        var folderPath = Path.GetDirectoryName(_filename);
         if (string.IsNullOrEmpty(folderPath) is false)
         {
             Directory.CreateDirectory(folderPath);

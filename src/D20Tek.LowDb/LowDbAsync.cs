@@ -3,30 +3,17 @@
 //---------------------------------------------------------------------------------------------------------------------
 namespace D20Tek.LowDb;
 
-public class LowDbAsync<T>
+public class LowDbAsync<T>(IStorageAdapterAsync<T> storageAdapter, T? data = null)
     where T : class, new()
 {
-    private readonly IStorageAdapterAsync<T> _storageAdapter;
-    private T _data;
-    private bool _isLoaded = false;
+    private readonly IStorageAdapterAsync<T> _storageAdapter = storageAdapter;
+    private T _data = data ?? new();
+    private bool _isLoaded = data != null;
 
-    public LowDbAsync(IStorageAdapterAsync<T> storageAdapter, T? data = null)
-    {
-        _storageAdapter = storageAdapter;
-        _isLoaded = data != null;
-        _data = data ?? new();
-    }
+    public async Task Read(CancellationToken token = default) =>
+        _data = await _storageAdapter.Read(token) ?? new T();
 
-    public async Task Read(CancellationToken token = default)
-    {
-        var data = await _storageAdapter.Read(token);
-        _data = data ?? new T();
-    }
-
-    public async Task Write(CancellationToken token = default)
-    {
-        await _storageAdapter.Write(_data, token);
-    }
+    public async Task Write(CancellationToken token = default) => await _storageAdapter.Write(_data, token);
 
     public async Task<T> Get(CancellationToken token = default)
     {

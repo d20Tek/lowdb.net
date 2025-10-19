@@ -8,10 +8,7 @@ public class MemoryStorageAdapterAsync<T> : IStorageAdapterAsync<T>
 {
     private T? _data = null;
 
-    public Task<T?> Read(CancellationToken token = default)
-    {
-        return Task.FromResult(_data);
-    }
+    public Task<T?> Read(CancellationToken token = default) => Task.FromResult(_data);
 
     public Task Write(T data, CancellationToken token = default)
     {

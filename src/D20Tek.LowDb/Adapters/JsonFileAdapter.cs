@@ -11,7 +11,7 @@ public class JsonFileAdapter<T> : IStorageAdapter<T>
     private readonly string filename;
     private readonly TextFileAdapter _textAdapter;
 
-    private static JsonSerializerOptions _serializerOptions = new()
+    private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         AllowTrailingCommas = true,
         PropertyNameCaseInsensitive = true,
@@ -28,15 +28,9 @@ public class JsonFileAdapter<T> : IStorageAdapter<T>
     public T? Read()
     {
         var json = _textAdapter.Read();
-        if (string.IsNullOrEmpty(json))
-        {
-            return null;
-        }
-        else
-        {
-            var result = JsonSerializer.Deserialize<T>(json, _serializerOptions);
-            return result;
-        }
+        if (string.IsNullOrEmpty(json)) return null;
+
+        return JsonSerializer.Deserialize<T>(json, _serializerOptions);
     }
 
     public void Write(T data)

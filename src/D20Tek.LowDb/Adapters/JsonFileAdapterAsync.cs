@@ -11,7 +11,7 @@ public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T>
     private readonly string filename;
     private readonly TextFileAdapterAsync _textAdapter;
 
-    private static JsonSerializerOptions _serializerOptions = new()
+    private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         AllowTrailingCommas = true,
         PropertyNameCaseInsensitive = true,
@@ -28,15 +28,9 @@ public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T>
     public async Task<T?> Read(CancellationToken token = default)
     {
         var json = await _textAdapter.Read(token);
-        if (string.IsNullOrEmpty(json))
-        {
-            return null;
-        }
-        else
-        {
-            var result = JsonSerializer.Deserialize<T>(json, _serializerOptions);
-            return result;
-        }
+        if (string.IsNullOrEmpty(json)) return null;
+
+        return JsonSerializer.Deserialize<T>(json, _serializerOptions);
     }
 
     public async Task Write(T data, CancellationToken token = default)

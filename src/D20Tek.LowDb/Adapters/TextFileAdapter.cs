@@ -3,39 +3,25 @@
 //---------------------------------------------------------------------------------------------------------------------
 namespace D20Tek.LowDb.Adapters;
 
-public class TextFileAdapter : IStorageAdapter<string>
+public class TextFileAdapter(string filename) : IStorageAdapter<string>
 {
-    private readonly string _filename;
-
-    public TextFileAdapter(string filename)
-    {
-        _filename = filename;
-    }
+    private readonly string _filename = filename;
 
     public string? Read()
     {
-        var folder = Path.GetDirectoryName(_filename);
-
-        EnsureFolderExists(folder);
-        if (File.Exists(_filename) is false)
-        {
-            return null;
-        }
-
-        var text = File.ReadAllText(_filename);
-        return text;
+        EnsureFolderExists();
+        return File.Exists(_filename) is false ? null : File.ReadAllText(_filename);
     }
 
     public void Write(string data)
     {
-        var folder = Path.GetDirectoryName(_filename);
-
-        EnsureFolderExists(folder);
+        EnsureFolderExists();
         File.WriteAllText(_filename, data);
     }
 
-    public void EnsureFolderExists(string? folderPath)
+    public void EnsureFolderExists()
     {
+        var folderPath = Path.GetDirectoryName(_filename);
         if (string.IsNullOrEmpty(folderPath) is false)
         {
             Directory.CreateDirectory(folderPath);

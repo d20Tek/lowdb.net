@@ -8,13 +8,7 @@ public class MemoryStorageAdapter<T> : IStorageAdapter<T>
 {
     private T? _data = null;
 
-    public T? Read()
-    {
-        return _data;
-    }
+    public T? Read() => _data;
 
-    public void Write(T data)
-    {
-        _data = data;
-    }
+    public void Write(T data) => _data = data;
 }

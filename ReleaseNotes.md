@@ -3,6 +3,10 @@ These are the release notes for each major release of the LowDb.Net package:
 
 ## Release 1.2.4
 Updated dependencies to latest versions.
+Modernized code in projects, unit tests, and samples.
+
+## Release 1.2.4
+Updated dependencies to latest versions.
 
 ## Release 1.2.2
 Added Repository pattern for LowDb databases

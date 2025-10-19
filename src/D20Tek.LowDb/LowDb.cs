@@ -3,30 +3,16 @@
 //---------------------------------------------------------------------------------------------------------------------
 namespace D20Tek.LowDb;
 
-public class LowDb<T>
+public class LowDb<T>(IStorageAdapter<T> storageAdapter, T? data = null)
     where T : class, new()
 {
-    private readonly IStorageAdapter<T> _storageAdapter;
-    private T _data;
-    private bool _isLoaded = false;
+    private readonly IStorageAdapter<T> _storageAdapter = storageAdapter;
+    private T _data = data ?? new();
+    private bool _isLoaded = data != null;
 
-    public LowDb(IStorageAdapter<T> storageAdapter, T? data = null)
-    {
-        _storageAdapter = storageAdapter;
-        _isLoaded = data != null;
-        _data = data ?? new();
-    }
+    public void Read() => _data = _storageAdapter.Read() ?? new T();
 
-    public void Read()
-    {
-        var data = _storageAdapter.Read();
-        _data = data ?? new T();
-    }
-
-    public void Write()
-    {
-        _storageAdapter.Write(_data);
-    }
+    public void Write() => _storageAdapter.Write(_data);
 
     public T Get()
     {

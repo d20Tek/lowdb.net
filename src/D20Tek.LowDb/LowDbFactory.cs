@@ -8,10 +8,8 @@ namespace D20Tek.LowDb;
 public static class LowDbFactory
 {
     public static LowDb<T> CreateJsonLowDb<T>(string filename)
-        where T : class, new()
-    {
-        return new LowDb<T>(new JsonFileAdapter<T>(filename));
-    }
+        where T : class, new() =>
+        new(new JsonFileAdapter<T>(filename));
 
     public static LowDb<T> CreateLowDb<T>(Action<LowDbBuilder> builderAction)
         where T : class, new()
@@ -23,10 +21,8 @@ public static class LowDbFactory
     }
 
     public static LowDbAsync<T> CreateJsonLowDbAsync<T>(string filename)
-        where T : class, new()
-    {
-        return new LowDbAsync<T>(new JsonFileAdapterAsync<T>(filename));
-    }
+        where T : class, new() =>
+        new(new JsonFileAdapterAsync<T>(filename));
 
     public static LowDbAsync<T> CreateLowDbAsync<T>(Action<LowDbBuilder> builderAction)
         where T : class, new()
