@@ -11,8 +11,5 @@ internal class TaskEntity
     
     public bool IsCompleted { get; set; }
 
-    public override string ToString()
-    {
-        return $"Id: {Id}, Name: {Name}, IsCompleted: {IsCompleted}";
-    }
+    public override string ToString() => $"Id: {Id}, Name: {Name}, IsCompleted: {IsCompleted}";
 }

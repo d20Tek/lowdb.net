@@ -5,10 +5,7 @@ namespace Sample.WebApi.Endpoints;
 
 internal interface ITasksRepository : IRepositoryAsync<TaskEntity>;
 
-internal class TasksRepository : LowDbAsyncRepository<TaskEntity, TasksDocument>, ITasksRepository
+internal class TasksRepository(LowDbAsync<TasksDocument> db) : 
+    LowDbAsyncRepository<TaskEntity, TasksDocument>(db, x => x.Tasks), ITasksRepository
 {
-    public TasksRepository(LowDbAsync<TasksDocument> db)
-        : base(db, x => x.Tasks)
-    {
-    }
 }

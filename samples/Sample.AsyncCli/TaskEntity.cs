@@ -13,10 +13,7 @@ internal class TaskEntity
 
     public EntityState State { get; set; } = EntityState.Active;
 
-    public override string ToString()
-    {
-        return $"Id: {Id}, Name: {Name}, IsCompleted: {IsCompleted}, State: {State}";
-    }
+    public override string ToString() => $"Id: {Id}, Name: {Name}, IsCompleted: {IsCompleted}, State: {State}";
 }
 
 public enum EntityState
