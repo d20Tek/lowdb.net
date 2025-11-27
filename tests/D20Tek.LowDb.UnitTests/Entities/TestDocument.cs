@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace D20Tek.LowDb.UnitTests.Entities;
 

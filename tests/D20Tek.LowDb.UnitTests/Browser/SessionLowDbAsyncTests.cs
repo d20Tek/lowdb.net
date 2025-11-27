@@ -1,6 +1,3 @@
-//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
 using D20Tek.LowDb.Browser.Adapters;
 using D20Tek.LowDb.UnitTests.Entities;
 using D20Tek.LowDb.UnitTests.Fakes;
@@ -41,13 +38,7 @@ public class SessionLowDbAsyncTests
         await db.Update(x =>
         {
             id = x.GetNextId();
-            x.Entities.Add(new TestEntity
-            {
-                Id = id,
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            });
+            x.Entities.Add(TestEntityFactory.Create(id));
         },
         token: TestContext.CancellationToken);
 
@@ -99,13 +90,7 @@ public class SessionLowDbAsyncTests
         await db.Update(x =>
         {
             id = Guid.NewGuid().GetHashCode();
-            x.Add(new TestEntity
-            {
-                Id = id,
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            });
+            x.Add(TestEntityFactory.Create(id));
         },
         token: TestContext.CancellationToken);
 

@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using D20Tek.LowDb.Browser;
 using D20Tek.LowDb.UnitTests.Entities;
@@ -100,8 +97,7 @@ public class DependencyInjectionTests
     }
 
     private static IServiceCollection CreateServiceCollection() =>
-        new ServiceCollection()
-            .AddSingleton<IJSRuntime, FakeJSRuntime>()
-            .AddBlazoredLocalStorage()
-            .AddBlazoredSessionStorage();
+        new ServiceCollection().AddSingleton<IJSRuntime, FakeJSRuntime>()
+                               .AddBlazoredLocalStorage()
+                               .AddBlazoredSessionStorage();
 }

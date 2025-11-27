@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace D20Tek.LowDb.UnitTests.Entities;
+﻿namespace D20Tek.LowDb.UnitTests.Entities;
 
 internal class TestEntity
 {

@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using D20Tek.LowDb.UnitTests.Entities;
+﻿using D20Tek.LowDb.UnitTests.Entities;
 using FluentAssertions;
 
 namespace D20Tek.LowDb.UnitTests;
@@ -84,8 +81,7 @@ public class LowDbFactoryTests
         // arrange
 
         // act
-        var db = LowDbFactory.CreateLowDbAsync<TestDocument>(b =>
-                b.UseInMemoryDatabase());
+        var db = LowDbFactory.CreateLowDbAsync<TestDocument>(b => b.UseInMemoryDatabase());
 
         // assert
         db.Should().NotBeNull();

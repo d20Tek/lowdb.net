@@ -1,5 +1,6 @@
 ﻿using D20Tek.LowDb.Adapters;
 using D20Tek.LowDb.UnitTests.Entities;
+using D20Tek.LowDb.UnitTests.Fakes;
 
 namespace D20Tek.LowDb.UnitTests.Repositories;
 
@@ -20,15 +21,7 @@ public class LowDbAsyncRepositoryCrudTests
         var id = Guid.NewGuid().GetHashCode();
 
         // act
-        var result = await repo.AddAsync(
-            new()
-            {
-                Id = id,
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            },
-            TestContext.CancellationToken);
+        var result = await repo.AddAsync(TestEntityFactory.Create(id), TestContext.CancellationToken);
 
         _ = await repo.SaveChangesAsync(TestContext.CancellationToken);
 
@@ -47,13 +40,7 @@ public class LowDbAsyncRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_addTestFile);
-        var entity = new TestEntity
-        {
-            Id = Guid.NewGuid().GetHashCode(),
-            Name = "Test entity",
-            Description = "test desc.",
-            Flag = true
-        };
+        var entity = new TestEntity();
 
         // act
         var r = await repo.AddAsync(entity, TestContext.CancellationToken);
@@ -72,15 +59,7 @@ public class LowDbAsyncRepositoryCrudTests
         var id = Guid.NewGuid().GetHashCode();
 
         // act
-        var result = await repo.AddAsync(
-            new()
-            {
-                Id = id,
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            },
-            TestContext.CancellationToken);
+        var result = await repo.AddAsync(TestEntityFactory.Create(), TestContext.CancellationToken);
 
         // assert
         Assert.IsTrue(result.IsSuccess);
@@ -123,13 +102,7 @@ public class LowDbAsyncRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_addTestFile);
-        var entity = new TestEntity
-        {
-            Id = Guid.NewGuid().GetHashCode(),
-            Name = "Test entity",
-            Description = "test desc.",
-            Flag = true
-        };
+        var entity = new TestEntity();
 
         // act
         var r = await repo.AddAsync(entity, TestContext.CancellationToken);
@@ -165,13 +138,7 @@ public class LowDbAsyncRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_removeTestFile);
-        var entity = new TestEntity
-        {
-            Id = Guid.NewGuid().GetHashCode(),
-            Name = "Test entity",
-            Description = "test desc.",
-            Flag = true
-        };
+        var entity = new TestEntity();
 
         // act
         var result = await repo.RemoveAsync(entity, TestContext.CancellationToken);
@@ -206,13 +173,7 @@ public class LowDbAsyncRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_removeTestFile);
-        var entity = new TestEntity
-        {
-            Id = Guid.NewGuid().GetHashCode(),
-            Name = "Test entity",
-            Description = "test desc.",
-            Flag = true
-        };
+        var entity = new TestEntity();
 
         // act
         var result = await repo.RemoveRangeAsync([entity], TestContext.CancellationToken);
@@ -253,15 +214,7 @@ public class LowDbAsyncRepositoryCrudTests
 
     private static async Task<TestEntity> AddTestEntity(TestsRepositoryAsync repo)
     {
-        var result = await repo.AddAsync(
-            new TestEntity
-            {
-                Id = Guid.NewGuid().GetHashCode(),
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            },
-            CancellationToken.None);
+        var result = await repo.AddAsync(TestEntityFactory.Create(), CancellationToken.None);
         _ = await repo.SaveChangesAsync(CancellationToken.None);
 
         return result.GetValue();

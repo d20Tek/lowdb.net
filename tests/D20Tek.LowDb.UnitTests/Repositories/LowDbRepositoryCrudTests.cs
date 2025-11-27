@@ -1,5 +1,6 @@
 ﻿using D20Tek.LowDb.Adapters;
 using D20Tek.LowDb.UnitTests.Entities;
+using D20Tek.LowDb.UnitTests.Fakes;
 
 namespace D20Tek.LowDb.UnitTests.Repositories;
 
@@ -20,15 +21,7 @@ public class LowDbRepositoryCrudTests
         var id = Guid.NewGuid().GetHashCode();
 
         // act
-        var result = repo.Add(
-            new TestEntity
-                {
-                    Id = id,
-                    Name = "Test entity",
-                    Description = "test desc.",
-                    Flag = true
-                });
-
+        var result = repo.Add(TestEntityFactory.Create(id));
         _ = repo.SaveChanges();
 
         // assert
@@ -46,13 +39,7 @@ public class LowDbRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_addTestFile);
-        var entity = new TestEntity
-        {
-            Id = Guid.NewGuid().GetHashCode(),
-            Name = "Test entity",
-            Description = "test desc.",
-            Flag = true
-        };
+        var entity = TestEntityFactory.Create();
 
         // act
         var r = repo.Add(entity);
@@ -71,14 +58,7 @@ public class LowDbRepositoryCrudTests
         var id = Guid.NewGuid().GetHashCode();
 
         // act
-        var result = repo.Add(
-            new TestEntity
-            {
-                Id = id,
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            });
+        var result = repo.Add(TestEntityFactory.Create());
 
         // assert
         Assert.IsTrue(result.IsSuccess);
@@ -121,13 +101,7 @@ public class LowDbRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_addTestFile);
-        var entity = new TestEntity
-        {
-            Id = Guid.NewGuid().GetHashCode(),
-            Name = "Test entity",
-            Description = "test desc.",
-            Flag = true
-        };
+        var entity = TestEntityFactory.Create();
 
         // act
         var r = repo.Add(entity);
@@ -163,13 +137,7 @@ public class LowDbRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_removeTestFile);
-        var entity = new TestEntity
-        {
-            Id = Guid.NewGuid().GetHashCode(),
-            Name = "Test entity",
-            Description = "test desc.",
-            Flag = true
-        };
+        var entity = TestEntityFactory.Create();
 
         // act
         var result = repo.Remove(entity);
@@ -204,13 +172,7 @@ public class LowDbRepositoryCrudTests
     {
         // arrange
         var repo = LoadRepository(_removeTestFile);
-        var entity = new TestEntity
-        {
-            Id = Guid.NewGuid().GetHashCode(),
-            Name = "Test entity",
-            Description = "test desc.",
-            Flag = true
-        };
+        var entity = TestEntityFactory.Create();
 
         // act
         var result = repo.RemoveRange([entity]);
@@ -251,14 +213,7 @@ public class LowDbRepositoryCrudTests
 
     private static TestEntity AddTestEntity(TestsRepository repo)
     {
-        var result = repo.Add(
-            new TestEntity
-            {
-                Id = Guid.NewGuid().GetHashCode(),
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            });
+        var result = repo.Add(TestEntityFactory.Create());
         _ = repo.SaveChanges();
 
         return result.GetValue();

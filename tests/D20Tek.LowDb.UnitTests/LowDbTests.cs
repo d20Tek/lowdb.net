@@ -1,8 +1,6 @@
-//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
 using D20Tek.LowDb.Adapters;
 using D20Tek.LowDb.UnitTests.Entities;
+using D20Tek.LowDb.UnitTests.Fakes;
 using FluentAssertions;
 
 namespace D20Tek.LowDb.UnitTests;
@@ -51,13 +49,7 @@ public class LowDbTests
         db.Update(x =>
         {
             id = x.GetNextId();
-            x.Entities.Add(new TestEntity
-            {
-                Id = id,
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            });
+            x.Entities.Add(TestEntityFactory.Create(id));
         });
 
         db.Read();
@@ -98,13 +90,7 @@ public class LowDbTests
         db.Update(x =>
         {
             id = x.GetNextId();
-            x.Entities.Add(new TestEntity
-            {
-                Id = id,
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            });
+            x.Entities.Add(TestEntityFactory.Create(id));
         });
 
         db.Read();
@@ -128,13 +114,7 @@ public class LowDbTests
         db.Update(x =>
         {
             id = Guid.NewGuid().GetHashCode();
-            x.Add(new TestEntity
-            {
-                Id = id,
-                Name = "Test entity",
-                Description = "test desc.",
-                Flag = true
-            });
+            x.Add(TestEntityFactory.Create(id));
         });
 
         db.Read();

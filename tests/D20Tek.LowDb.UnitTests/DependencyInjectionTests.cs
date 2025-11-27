@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using D20Tek.LowDb.UnitTests.Entities;
+﻿using D20Tek.LowDb.UnitTests.Entities;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -130,8 +127,7 @@ public class DependencyInjectionTests
         var services = new ServiceCollection();
 
         // act
-        services.AddLowDbAsync<TestDocument>(b =>
-            b.UseInMemoryDatabase());
+        services.AddLowDbAsync<TestDocument>(b => b.UseInMemoryDatabase());
 
         // assert
         services.Any(x => x.ServiceType == typeof(LowDbAsync<TestDocument>)).Should().BeTrue();

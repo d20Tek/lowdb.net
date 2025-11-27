@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
 using System.Diagnostics.CodeAnalysis;
 
 namespace D20Tek.LowDb.UnitTests.Fakes;
