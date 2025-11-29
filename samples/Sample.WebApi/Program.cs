@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using Sample.WebApi.Endpoints;
+﻿using Sample.WebApi.Endpoints;
 using D20Tek.LowDb;
 
 var builder = WebApplication.CreateBuilder(args);

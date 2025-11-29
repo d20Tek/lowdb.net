@@ -1,6 +1,3 @@
-//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Sample.BlazorWasm;
