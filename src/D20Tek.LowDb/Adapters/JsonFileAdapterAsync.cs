@@ -1,14 +1,10 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace D20Tek.LowDb.Adapters;
 
-public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T>
-    where T : class
+public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T> where T : class
 {
-    private readonly string filename;
+    private readonly string _filename;
     private readonly TextFileAdapterAsync _textAdapter;
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
@@ -21,7 +17,7 @@ public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T>
     public JsonFileAdapterAsync(string filename)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(filename, nameof(filename));
-        this.filename = filename;
+        _filename = filename;
         _textAdapter = new TextFileAdapterAsync(filename);
     }
 

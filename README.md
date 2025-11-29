@@ -6,12 +6,12 @@ This library is inspired by the [lowdb Javascript package](https://github.com/ty
 ## Installation
 This library is a NuGet package so it is easy to add to your project. To install the package into your solution, you can use the NuGet Package Manager. In PM, please use the following command:
 ```  
-PM > Install-Package LowDb.Net -Version 1.2.5
+PM > Install-Package LowDb.Net -Version 1.2.6
 ``` 
 
 There is an optional package that extends the LowDb functionality to work with web storage technologies (session and local storage). If you are working with Blazor client projects you can install this package into your solution using NuGet Package Manager. In PM, please use the following command:
 ```  
-PM > Install-Package LowDb.Net.Browser -Version 1.2.5
+PM > Install-Package LowDb.Net.Browser -Version 1.2.6
 ``` 
 
 To install in the Visual Studio UI, go to the Tools menu > "Manage NuGet Packages". Then search for LowDb.Net, and install either package from there.

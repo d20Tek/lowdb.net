@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using D20Tek.LowDb.Adapters;
+﻿using D20Tek.LowDb.Adapters;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace D20Tek.LowDb;

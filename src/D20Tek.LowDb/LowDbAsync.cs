@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-namespace D20Tek.LowDb;
+﻿namespace D20Tek.LowDb;
 
 public class LowDbAsync<T>(IStorageAdapterAsync<T> storageAdapter, T? data = null)
     where T : class, new()

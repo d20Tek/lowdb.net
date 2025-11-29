@@ -1,15 +1,12 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using D20Tek.LowDb.Adapters;
+﻿using D20Tek.LowDb.Adapters;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace D20Tek.LowDb;
 
 public class LowDbBuilder
 {
-    private string _filename = "";
-    private string _folder = "";
+    private string _filename = string.Empty;
+    private string _folder = string.Empty;
     private bool _useMemoryAdapter = false;
 
     public ServiceLifetime ServiceLifetime { get; private set; } = ServiceLifetime.Singleton;
@@ -40,8 +37,7 @@ public class LowDbBuilder
         return this;
     }
 
-    public LowDb<T> Build<T>()
-        where T : class, new()
+    public LowDb<T> Build<T>() where T : class, new()
     {
         IStorageAdapter<T> adapter;
         if (_useMemoryAdapter)
@@ -58,8 +54,7 @@ public class LowDbBuilder
         return new(adapter);
     }
 
-    public LowDbAsync<T> BuildAsync<T>()
-        where T : class, new()
+    public LowDbAsync<T> BuildAsync<T>() where T : class, new()
     {
         IStorageAdapterAsync<T> adapter;
         if (_useMemoryAdapter)

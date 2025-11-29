@@ -1,7 +1,4 @@
-﻿//---------------------------------------------------------------------------------------------------------------------
-// Copyright (c) d20Tek.  All rights reserved.
-//---------------------------------------------------------------------------------------------------------------------
-using Blazored.LocalStorage;
+﻿using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using D20Tek.LowDb.Browser.Adapters;
 using Microsoft.Extensions.DependencyInjection;
