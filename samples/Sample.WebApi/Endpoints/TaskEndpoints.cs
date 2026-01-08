@@ -15,16 +15,14 @@ public static class TaskEndpoints
             var tasksResult = await repo.GetAllAsync();
             return tasksResult.ToApiResult();
         })
-        .WithName("GetAllTasks")
-        .WithOpenApi();
+        .WithName("GetAllTasks");
 
         group.MapGet("/{id}", async (int id, LowDbAsync<TasksDocument> db) =>
         {
             var taskDoc = await db.Get();
             return taskDoc.Tasks.FirstOrDefault(x => x.Id == id);
         })
-        .WithName("GetTaskById")
-        .WithOpenApi();
+        .WithName("GetTaskById");
 
         group.MapPut("/{id}", async (int id, UpdateTaskRequest request, LowDbAsync<TasksDocument> db) =>
         {
@@ -43,8 +41,7 @@ public static class TaskEndpoints
 
             return TypedResults.Ok(response);
         })
-        .WithName("UpdateTask")
-        .WithOpenApi();
+        .WithName("UpdateTask");
 
         group.MapPost("/", async (CreateTaskRequest request, LowDbAsync<TasksDocument> db) =>
         {
@@ -63,8 +60,7 @@ public static class TaskEndpoints
 
             return TypedResults.Created($"/api/v1/tasks/{response?.Id}", response);
         })
-        .WithName("CreateTask")
-        .WithOpenApi();
+        .WithName("CreateTask");
 
         group.MapDelete("/{id}", async (int id, LowDbAsync<TasksDocument> db) =>
         {
@@ -74,7 +70,6 @@ public static class TaskEndpoints
             });
             return TypedResults.Ok(new TaskEntity { Id = id });
         })
-        .WithName("DeleteTask")
-        .WithOpenApi();
+        .WithName("DeleteTask");
     }
 }
