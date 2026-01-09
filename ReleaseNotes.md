@@ -1,6 +1,11 @@
 # LowDb.Net Release Notes
 These are the release notes for each major release of the LowDb.Net package:
 
+## Release 1.3.1
+- Upgraded library projects to support .NET 9 & 10.
+- Upgraded unit tests and sample projects to .NET 10.
+- Updated dependencies to latest versions.
+
 ## Release 1.2.6
 - Updated dependencies to latest versions.
 - Updated unit tests to MsTest 4.
