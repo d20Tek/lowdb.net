@@ -17,8 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazored.LocalStorage" />
-    <PackageReference Include="Blazored.SessionStorage" />
+    <PackageReference Include="D20Tek.Blazor.BrowserStorage" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,7 +7,6 @@
   <ItemGroup>
     <PackageReference Include="D20Tek.Functional.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 

@@ -39,7 +39,7 @@
 
     private async Task UpdateTask()
     {
-        bool result = _service.UpdateTask(Task);
+        bool result = await _service.UpdateTask(Task);
         if (result is false)
             _errorMessage = "Error: task could not be updated correctly.";
         else

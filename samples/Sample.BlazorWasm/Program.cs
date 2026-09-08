@@ -11,8 +11,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 // swap between different LowDbs (local, session) by picking the one to register.
-builder.Services.AddLocalLowDb<TasksDocument>("d20tek-tasks");
-//builder.Services.AddSessionLowDb<TasksDocument>("d20tek-tasks-session");
+builder.Services.AddLocalLowDbAsync<TasksDocument>("d20tek-tasks");
+//builder.Services.AddSessionLowDbAsync<TasksDocument>("d20tek-tasks-session");
 
 builder.Services.AddScoped<TaskRepository>();
 
