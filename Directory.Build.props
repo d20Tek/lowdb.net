@@ -1,0 +1,22 @@
+<Project>
+
+  <!-- Shared build properties for all projects in the solution. -->
+  <PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Shared package metadata used by the packable library projects. -->
+  <PropertyGroup>
+		<Version>1.1.0</Version>
+		<Company>d20Tek</Company>
+		<Authors>d20Tek</Authors>
+		<Copyright>Copyright (c) d20Tek.  All rights reserved.</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageProjectUrl>https://github.com/d20Tek/lowdb.net</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/d20Tek/lowdb.net</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReleaseNotes>Please find the detailed release notes at https://github.com/d20Tek/lowdb.net/ReleaseNotes.md</PackageReleaseNotes>
+  </PropertyGroup>
+
+</Project>
