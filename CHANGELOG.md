@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Release v1.4.1
 
+### Added
+- Converted sln file to new slnx format.
+- Updated solution to work with central package and build management.
+- Added in-process write concurrency protection to the core `LowDb<T>` and `LowDbAsync<T>` classes. Concurrent `Read`, `Write`, and `Update` calls on a shared instance are now fully serialized (`LowDb<T>` uses a `lock`, `LowDbAsync<T>` uses a `SemaphoreSlim`), preventing backing-store corruption and lost updates. This protection is in-process and per-instance only; it does not coordinate across multiple processes or across separate instances pointing at the same file.
+- `LowDbAsync<T>` now implements `IDisposable` to release its internal `SemaphoreSlim`.
+
 ### Changed
 
 - `LowDb.Net.Browser` now depends on `D20Tek.Blazor.BrowserStorage` instead of `Blazored.LocalStorage` and `Blazored.SessionStorage`. The browser storage adapters now use the result-based `GetAsync`/`SetAsync` API surface.

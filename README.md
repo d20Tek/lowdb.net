@@ -118,6 +118,8 @@ This database is intended for local usage for console and Windows applications a
 
 When a single JSON database file becomes larger than 50-100MB, you may start to see performance degradation. The Write operations serialize the full object tree into JSON and saves it all to the file. 
 
+Both `LowDb` and `LowDbAsync` serialize concurrent `Read`, `Write`, and `Update` calls on a shared instance, so multiple callers within the same process will not corrupt the backing store or overwrite each other's changes. This protection is in-process and per-instance only. It does not coordinate across multiple processes, or across separate LowDb instances that point at the same file. If you need cross-process or multi-instance safety on a shared file, use a database that provides it, such as SQLite or LiteDB.
+
 The LowDb does expose the Read and Write operations to enable batch multiple updates together to help with performance concerns. With those methods, you could implement the UnitOfWork pattern to make changes in batches.
 
 You can also break up the data into separate files, if they can logically be separated... just as if you were using other Document DBs.
