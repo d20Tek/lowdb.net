@@ -32,7 +32,7 @@
 
     private async Task CreateTask()
     {
-        bool result = _service.CreateTask(_task.Name, _task.IsCompleted);
+        bool result = await _service.CreateTask(_task.Name, _task.IsCompleted);
         if (result is false)
             _errorMessage = "Error: new task could not be created.";
         else

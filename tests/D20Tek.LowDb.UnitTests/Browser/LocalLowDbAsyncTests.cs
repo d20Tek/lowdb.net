@@ -1,3 +1,5 @@
+using D20Tek.Blazor.BrowserStorage;
+using D20Tek.Blazor.BrowserStorage.Testing;
 using D20Tek.LowDb.Browser.Adapters;
 using D20Tek.LowDb.UnitTests.Entities;
 using D20Tek.LowDb.UnitTests.Fakes;
@@ -9,7 +11,7 @@ namespace D20Tek.LowDb.UnitTests.Browser;
 [TestClass]
 public class LocalLowDbAsyncTests
 {
-    private readonly FakeLocalStorage _storage = new();
+    private readonly ILocalStorageService _storage = new InMemoryLocalStorageService();
 
     [TestMethod]
     public async Task Read_WithMissingFile_ReturnsNull()

@@ -40,7 +40,7 @@
 
     private async Task DeleteTask()
     {
-        bool result = _service.DeleteTask(Task.Id);
+        bool result = await _service.DeleteTask(Task.Id);
         if (result is false)
             _errorMessage = "Error: task could not be deleted correctly.";
         else

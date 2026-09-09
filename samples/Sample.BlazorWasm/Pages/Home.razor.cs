@@ -10,7 +10,7 @@ public partial class Home
     TaskEntity[] _tasks = [];
     TaskEntity? _selectedTask = null;
 
-    protected override void OnInitialized() => _tasks = _service.GetTasks();
+    protected override async Task OnInitializedAsync() => _tasks = await _service.GetTasks();
 
     private void OnCreate()
     {
@@ -30,10 +30,10 @@ public partial class Home
         _showComponent = TaskComponentType.Delete;
     }
 
-    private void OnTasksUpdated()
+    private async Task OnTasksUpdated()
     {
         if (_showComponent is TaskComponentType.Delete) _showComponent = TaskComponentType.None;
-        _tasks = _service.GetTasks();
+        _tasks = await _service.GetTasks();
     }
 
     private RenderFragment? GetSelectedComponent() =>

@@ -2,25 +2,23 @@
 
 namespace Sample.BlazorWasm.Pages;
 
-internal class TaskRepository
+internal class TaskRepository(LowDbAsync<TasksDocument> db)
 {
-    private readonly LowDb<TasksDocument> _db;
+    private readonly LowDbAsync<TasksDocument> _db = db;
 
-    public TaskRepository(LowDb<TasksDocument> db) => _db = db;
-
-    public TaskEntity[] GetTasks()
+    public async Task<TaskEntity[]> GetTasks()
     {
-        var taskDoc = _db.Get();
+        var taskDoc = await _db.Get();
         return [.. taskDoc.Tasks];
     }
 
-    public bool CreateTask(string name, bool isCompleted = false)
+    public async Task<bool> CreateTask(string name, bool isCompleted = false)
     {
         if (string.IsNullOrEmpty(name)) return false;
 
-        return TryOperation(() =>
+        return await TryOperation(async () =>
         {
-            _db.Update(doc =>
+            await _db.Update(doc =>
             {
                 doc.LastId = doc.GetNextId();
                 doc.Tasks.Add(new TaskEntity { Id = doc.LastId, Name = name, IsCompleted = isCompleted });
@@ -29,12 +27,12 @@ internal class TaskRepository
         });
     }
 
-    public bool UpdateTask(TaskEntity updatedTask)
+    public async Task<bool> UpdateTask(TaskEntity updatedTask)
     {
-        return TryOperation(() =>
+        return await TryOperation(async () =>
         {
             var result = false;
-            _db.Update(x =>
+            await _db.Update(x =>
             {
                 var task = x.Tasks.FirstOrDefault(x => x.Id == updatedTask.Id);
                 if (task is not null)
@@ -49,11 +47,11 @@ internal class TaskRepository
         });
     }
 
-    public bool DeleteTask(int id)
+    public async Task<bool> DeleteTask(int id)
     {
-        return TryOperation(() =>
+        return await TryOperation(async () =>
         {
-            _db.Update(doc =>
+            await _db.Update(doc =>
             {
                 doc.Tasks.RemoveAll(x => x.Id == id);
             });
@@ -61,9 +59,9 @@ internal class TaskRepository
         });
     }
 
-    private static bool TryOperation(Func<bool> operation)
+    private static async Task<bool> TryOperation(Func<Task<bool>> operation)
     {
-        try { return operation(); }
+        try { return await operation(); }
         catch (Exception) { return false; }
     }
 }

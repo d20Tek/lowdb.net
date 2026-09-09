@@ -3,6 +3,15 @@ using System.Linq.Expressions;
 
 namespace D20Tek.LowDb.Repositories;
 
+/// <summary>
+/// A synchronous repository implementation that manages a <see cref="HashSet{TEntity}"/> stored
+/// within a LowDb document. Read operations query the in-memory document while
+/// <see cref="SaveChanges"/> persists the current state through the underlying database.
+/// </summary>
+/// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
+/// <typeparam name="TDocument">The LowDb document type that contains the entity set.</typeparam>
+/// <param name="db">The LowDb database that stores the document.</param>
+/// <param name="setSelector">An expression that selects the entity set within the document.</param>
 public class LowDbRepository<TEntity, TDocument>(
     LowDb<TDocument> db,
     Expression<Func<TDocument, HashSet<TEntity>>> setSelector) : IRepository<TEntity>
@@ -12,9 +21,11 @@ public class LowDbRepository<TEntity, TDocument>(
     private readonly LowDb<TDocument> _db = db;
     private readonly Func<TDocument, HashSet<TEntity>> GetHashSet = setSelector.Compile();
 
+    /// <inheritdoc/>
     public Result<IEnumerable<TEntity>> GetAll() =>
         Try.Run(() => Result<IEnumerable<TEntity>>.Success(GetHashSet(_db.Get()).AsEnumerable()));
 
+    /// <inheritdoc/>
     public Result<TEntity> GetById<TProperty>(Expression<Func<TEntity, TProperty>> idSelector, TProperty id)
         where TProperty : notnull =>
         Try.Run(() =>
@@ -24,13 +35,16 @@ public class LowDbRepository<TEntity, TDocument>(
             return entity ?? Errors.NotFoundError<TEntity>(id);
         });
 
+    /// <inheritdoc/>
     public Result<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate) =>
         Try.Run(() => Result<IEnumerable<TEntity>>.Success(
             GetHashSet(_db.Get()).AsQueryable().Where(predicate).AsEnumerable()));
 
+    /// <inheritdoc/>
     public Result<bool> Exists(Expression<Func<TEntity, bool>> predicate) =>
         Try.Run(() => Result<bool>.Success(GetHashSet(_db.Get()).AsQueryable().Any(predicate)));
 
+    /// <inheritdoc/>
     public Result<TEntity> Add(TEntity entity) =>
         Try.Run(() =>
         {
@@ -38,6 +52,7 @@ public class LowDbRepository<TEntity, TDocument>(
             return added ? entity : Errors.AddFailedError<TEntity>(entity);
         });
     
+    /// <inheritdoc/>
     public Result<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities) =>
         Try.Run(() =>
         {
@@ -50,6 +65,7 @@ public class LowDbRepository<TEntity, TDocument>(
             return Result<IEnumerable<TEntity>>.Success(entities);
         });
     
+    /// <inheritdoc/>
     public Result<TEntity> Remove(TEntity entity) =>
         Try.Run(() =>
         {
@@ -57,6 +73,7 @@ public class LowDbRepository<TEntity, TDocument>(
             return removed ? entity : Errors.RemoveFailedError<TEntity>(entity);
         });
     
+    /// <inheritdoc/>
     public Result<IEnumerable<TEntity>> RemoveRange(IEnumerable<TEntity> entities) =>
         Try.Run(() =>
         {
@@ -69,8 +86,10 @@ public class LowDbRepository<TEntity, TDocument>(
             return Result<IEnumerable<TEntity>>.Success(entities);
         });
     
+    /// <inheritdoc/>
     public Result<TEntity> Update(TEntity entity) => Result<TEntity>.Success(entity);
 
+    /// <inheritdoc/>
     public Result<bool> SaveChanges() => 
         Try.Run(() =>
         {

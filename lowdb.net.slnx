@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Samples/">
+    <Project Path="samples/Sample.AsyncCli/Sample.AsyncCli.csproj" />
+    <Project Path="samples/Sample.BlazorWasm/Sample.BlazorWasm.csproj" />
+    <Project Path="samples/Sample.Cli/Sample.Cli.csproj" />
+    <Project Path="samples/Sample.WebApi/Sample.WebApi.csproj" />
+  </Folder>
+  <Project Path="src/D20Tek.LowDb.Browser/D20Tek.LowDb.Browser.csproj" />
+  <Project Path="src/D20Tek.LowDb.Repositories/D20Tek.LowDb.Repositories.csproj" />
+  <Project Path="src/D20Tek.LowDb/D20Tek.LowDb.csproj" />
+  <Project Path="tests/D20Tek.LowDb.UnitTests/D20Tek.LowDb.UnitTests.csproj" />
+</Solution>
