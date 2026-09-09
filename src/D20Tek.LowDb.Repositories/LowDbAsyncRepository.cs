@@ -4,6 +4,15 @@ using System.Linq.Expressions;
 
 namespace D20Tek.LowDb.Repositories;
 
+/// <summary>
+/// An asynchronous repository implementation that manages a <see cref="HashSet{TEntity}"/> stored
+/// within a LowDb document. Read operations query the in-memory document while
+/// <see cref="SaveChangesAsync"/> persists the current state through the underlying database.
+/// </summary>
+/// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
+/// <typeparam name="TDocument">The LowDb document type that contains the entity set.</typeparam>
+/// <param name="db">The asynchronous LowDb database that stores the document.</param>
+/// <param name="setSelector">An expression that selects the entity set within the document.</param>
 public class LowDbAsyncRepository<TEntity, TDocument>(
     LowDbAsync<TDocument> db,
     Expression<Func<TDocument, HashSet<TEntity>>> setSelector) : IRepositoryAsync<TEntity>
@@ -13,10 +22,12 @@ public class LowDbAsyncRepository<TEntity, TDocument>(
     private readonly LowDbAsync<TDocument> _db = db;
     private readonly Func<TDocument, HashSet<TEntity>> GetHashSet = setSelector.Compile();
 
+    /// <inheritdoc/>
     public async Task<Result<IEnumerable<TEntity>>> GetAllAsync(CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
             Result<IEnumerable<TEntity>>.Success(GetHashSet(await _db.Get(token)).AsEnumerable()));
 
+    /// <inheritdoc/>
     public async Task<Result<TEntity>> GetByIdAsync<TProperty>(
         Expression<Func<TEntity, TProperty>> idSelector,
         TProperty id,
@@ -29,18 +40,21 @@ public class LowDbAsyncRepository<TEntity, TDocument>(
             return entity ?? Errors.NotFoundError<TEntity>(id);
         });
 
+    /// <inheritdoc/>
     public async Task<Result<IEnumerable<TEntity>>> FindAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken token = default) =>
         await TryAsync.RunAsync(async () => Result<IEnumerable<TEntity>>.Success(
             GetHashSet(await _db.Get(token)).AsQueryable().Where(predicate).AsEnumerable()));
 
+    /// <inheritdoc/>
     public async Task<Result<bool>> ExistsAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
             Result<bool>.Success(GetHashSet(await _db.Get(token)).AsQueryable().Any(predicate)));
 
+    /// <inheritdoc/>
     public async Task<Result<TEntity>> AddAsync(TEntity entity, CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
         {
@@ -49,6 +63,7 @@ public class LowDbAsyncRepository<TEntity, TDocument>(
             return added ? entity : Errors.AddFailedError<TEntity>(entity);
         });
     
+    /// <inheritdoc/>
     public async Task<Result<IEnumerable<TEntity>>> AddRangeAsync(
         IEnumerable<TEntity> entities,
         CancellationToken token = default) =>
@@ -63,6 +78,7 @@ public class LowDbAsyncRepository<TEntity, TDocument>(
             return Result<IEnumerable<TEntity>>.Success(entities);
         });
     
+    /// <inheritdoc/>
     public async Task<Result<TEntity>> RemoveAsync(TEntity entity, CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
         {
@@ -70,6 +86,7 @@ public class LowDbAsyncRepository<TEntity, TDocument>(
             return removed ? entity : Errors.RemoveFailedError<TEntity>(entity);
         });
     
+    /// <inheritdoc/>
     public async Task<Result<IEnumerable<TEntity>>> RemoveRangeAsync(
         IEnumerable<TEntity> entities,
         CancellationToken token = default) =>
@@ -84,9 +101,11 @@ public class LowDbAsyncRepository<TEntity, TDocument>(
             return Result<IEnumerable<TEntity>>.Success(entities);
         });
     
+    /// <inheritdoc/>
     public Task<Result<TEntity>> UpdateAsync(TEntity entity, CancellationToken token = default) =>
         Task.FromResult(Result<TEntity>.Success(entity));
 
+    /// <inheritdoc/>
     public async Task<Result<bool>> SaveChangesAsync(CancellationToken token = default) =>
         await TryAsync.RunAsync(async () =>
         {

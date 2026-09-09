@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>LowDb Repositories</Title>
     <PackageId>LowDb.Net.Repositories</PackageId>
     <Description>A .NET implementation of the LowDB file-based database for use in applications and experiments that only require a minimal database implementation. Supports JSON-based database in web storage.
