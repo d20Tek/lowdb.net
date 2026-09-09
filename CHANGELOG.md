@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated solution to work with central package and build management.
 - Added in-process write concurrency protection to the core `LowDb<T>` and `LowDbAsync<T>` classes. Concurrent `Read`, `Write`, and `Update` calls on a shared instance are now fully serialized (`LowDb<T>` uses a `lock`, `LowDbAsync<T>` uses a `SemaphoreSlim`), preventing backing-store corruption and lost updates. This protection is in-process and per-instance only; it does not coordinate across multiple processes or across separate instances pointing at the same file.
 - `LowDbAsync<T>` now implements `IDisposable` to release its internal `SemaphoreSlim`.
+- Added XML documentation comments to the public API surface of `LowDb.Net`, `LowDb.Net.Browser`, and `LowDb.Net.Repositories`.
+- Migrated nuget-release script to use Nuget Trusted Publishing to publish packages to nuget.org.
 
 ### Changed
 
