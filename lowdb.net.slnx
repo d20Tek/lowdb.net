@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/.plans/">
+    <File Path=".plans/future-features.md" />
+  </Folder>
   <Folder Name="/Samples/">
     <Project Path="samples/Sample.AsyncCli/Sample.AsyncCli.csproj" />
     <Project Path="samples/Sample.BlazorWasm/Sample.BlazorWasm.csproj" />
