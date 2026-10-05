@@ -29,7 +29,7 @@ Optionally keep a `.bak` of the last-good file before overwrite (builder flag `W
 Cheap insurance for a file-based store; pairs naturally with #1. If deserialization of the main file
 fails on load, optionally fall back to the backup.
 
-### 3. Configurable `JsonSerializerOptions`
+### 3. Configurable `JsonSerializerOptions` [DONE]
 `JsonFileAdapter` currently hardcodes serializer options (camelCase, trailing commas). Consumers
 cannot add converters (enums-as-string, custom date formats), set `WriteIndented`, or supply a
 source-generated `JsonSerializerContext` (which also matters for Blazor WASM AOT / trimming, the

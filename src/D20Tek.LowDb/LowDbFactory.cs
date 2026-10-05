@@ -1,4 +1,5 @@
 ﻿using D20Tek.LowDb.Adapters;
+using System.Text.Json;
 
 namespace D20Tek.LowDb;
 
@@ -14,10 +15,15 @@ public static class LowDbFactory
     /// </summary>
     /// <typeparam name="T">The document type managed by the database.</typeparam>
     /// <param name="filename">The JSON database file name.</param>
+    /// <param name="serializerOptions">
+    /// Optional <see cref="JsonSerializerOptions"/> used to serialize and deserialize the
+    /// document. When <see langword="null"/>, defaults to camel-case property names with
+    /// case-insensitive, trailing-comma-tolerant deserialization.
+    /// </param>
     /// <returns>A configured <see cref="LowDb{T}"/> instance.</returns>
-    public static LowDb<T> CreateJsonLowDb<T>(string filename)
+    public static LowDb<T> CreateJsonLowDb<T>(string filename, JsonSerializerOptions? serializerOptions = null)
         where T : class, new() =>
-        new(new JsonFileAdapter<T>(filename));
+        new(new JsonFileAdapter<T>(filename, serializerOptions));
 
     /// <summary>
     /// Creates a synchronous database configured through the supplied builder callback.
@@ -39,10 +45,15 @@ public static class LowDbFactory
     /// </summary>
     /// <typeparam name="T">The document type managed by the database.</typeparam>
     /// <param name="filename">The JSON database file name.</param>
+    /// <param name="serializerOptions">
+    /// Optional <see cref="JsonSerializerOptions"/> used to serialize and deserialize the
+    /// document. When <see langword="null"/>, defaults to camel-case property names with
+    /// case-insensitive, trailing-comma-tolerant deserialization.
+    /// </param>
     /// <returns>A configured <see cref="LowDbAsync{T}"/> instance.</returns>
-    public static LowDbAsync<T> CreateJsonLowDbAsync<T>(string filename)
+    public static LowDbAsync<T> CreateJsonLowDbAsync<T>(string filename, JsonSerializerOptions? serializerOptions = null)
         where T : class, new() =>
-        new(new JsonFileAdapterAsync<T>(filename));
+        new(new JsonFileAdapterAsync<T>(filename, serializerOptions));
 
     /// <summary>
     /// Creates an asynchronous database configured through the supplied builder callback.

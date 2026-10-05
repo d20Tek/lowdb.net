@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Release v1.4.3
+
+### Added
+
+- Configurable `JsonSerializerOptions` for JSON file persistence. `JsonFileAdapter<T>` and `JsonFileAdapterAsync<T>` now accept an optional `JsonSerializerOptions` constructor parameter, defaulting to the existing camel-case, case-insensitive, trailing-comma-tolerant behavior when not supplied.
+- `LowDbBuilder` gained a `WithJsonSerializerOptions` method, and `LowDbFactory.CreateJsonLowDb`/`CreateJsonLowDbAsync` and the `AddLowDb`/`AddLowDbAsync` dependency injection extensions gained an optional `serializerOptions` parameter, unblocking custom converters, `WriteIndented`, and source-generated `JsonSerializerContext` scenarios (including Blazor WASM AOT / trimming).
+
+### Changed
+
+- Updated package references to the newest versions.
+
 ## Release v1.4.2
 
 ### Added

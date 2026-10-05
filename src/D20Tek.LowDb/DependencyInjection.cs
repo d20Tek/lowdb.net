@@ -1,5 +1,6 @@
 ﻿using D20Tek.LowDb.Adapters;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 
 namespace D20Tek.LowDb;
 
@@ -17,16 +18,22 @@ public static class DependencyInjection
     /// <param name="services">The service collection to add the registration to.</param>
     /// <param name="filename">The JSON database file name.</param>
     /// <param name="lifetime">The service lifetime for the registration. Defaults to <see cref="ServiceLifetime.Singleton"/>.</param>
+    /// <param name="serializerOptions">
+    /// Optional <see cref="JsonSerializerOptions"/> used to serialize and deserialize the
+    /// document. When <see langword="null"/>, defaults to camel-case property names with
+    /// case-insensitive, trailing-comma-tolerant deserialization.
+    /// </param>
     /// <returns>The same service collection so calls can be chained.</returns>
     public static IServiceCollection AddLowDb<T>(
         this IServiceCollection services,
         string filename,
-        ServiceLifetime lifetime = ServiceLifetime.Singleton)
+        ServiceLifetime lifetime = ServiceLifetime.Singleton,
+        JsonSerializerOptions? serializerOptions = null)
         where T : class, new()
     {
         ServiceDescriptor descriptor = new(
             typeof(LowDb<T>),
-            sp => new LowDb<T>(new JsonFileAdapter<T>(filename)),
+            sp => new LowDb<T>(new JsonFileAdapter<T>(filename, serializerOptions)),
             lifetime);
         services.Add(descriptor);
 
@@ -61,16 +68,22 @@ public static class DependencyInjection
     /// <param name="services">The service collection to add the registration to.</param>
     /// <param name="filename">The JSON database file name.</param>
     /// <param name="lifetime">The service lifetime for the registration. Defaults to <see cref="ServiceLifetime.Singleton"/>.</param>
+    /// <param name="serializerOptions">
+    /// Optional <see cref="JsonSerializerOptions"/> used to serialize and deserialize the
+    /// document. When <see langword="null"/>, defaults to camel-case property names with
+    /// case-insensitive, trailing-comma-tolerant deserialization.
+    /// </param>
     /// <returns>The same service collection so calls can be chained.</returns>
     public static IServiceCollection AddLowDbAsync<T>(
         this IServiceCollection services,
         string filename,
-        ServiceLifetime lifetime = ServiceLifetime.Singleton)
+        ServiceLifetime lifetime = ServiceLifetime.Singleton,
+        JsonSerializerOptions? serializerOptions = null)
         where T : class, new()
     {
         ServiceDescriptor descriptor = new(
             typeof(LowDbAsync<T>),
-            sp => new LowDbAsync<T>(new JsonFileAdapterAsync<T>(filename)),
+            sp => new LowDbAsync<T>(new JsonFileAdapterAsync<T>(filename, serializerOptions)),
             lifetime);
         services.Add(descriptor);
 

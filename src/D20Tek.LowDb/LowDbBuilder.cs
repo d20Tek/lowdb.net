@@ -1,5 +1,6 @@
 ﻿using D20Tek.LowDb.Adapters;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 
 namespace D20Tek.LowDb;
 
@@ -14,6 +15,7 @@ public class LowDbBuilder
     private string _filename = string.Empty;
     private string _folder = string.Empty;
     private bool _useMemoryAdapter = false;
+    private JsonSerializerOptions? _serializerOptions;
 
     /// <summary>
     /// Gets the service lifetime that dependency injection registrations should use for the
@@ -60,6 +62,20 @@ public class LowDbBuilder
     }
 
     /// <summary>
+    /// Sets the <see cref="JsonSerializerOptions"/> used to serialize and deserialize the
+    /// document when the database is backed by a JSON file. Has no effect when
+    /// <see cref="UseInMemoryDatabase"/> is used.
+    /// </summary>
+    /// <param name="serializerOptions">The serializer options to use.</param>
+    /// <returns>The same builder instance so calls can be chained.</returns>
+    public LowDbBuilder WithJsonSerializerOptions(JsonSerializerOptions serializerOptions)
+    {
+        ArgumentNullException.ThrowIfNull(serializerOptions, nameof(serializerOptions));
+        _serializerOptions = serializerOptions;
+        return this;
+    }
+
+    /// <summary>
     /// Sets the service lifetime used when the database is registered with a dependency
     /// injection container.
     /// </summary>
@@ -90,7 +106,7 @@ public class LowDbBuilder
         {
             ArgumentNullException.ThrowIfNullOrEmpty(_filename, nameof(_filename));
             string fullname = string.IsNullOrEmpty(_folder) ? _filename : Path.Combine(_folder, _filename);
-            adapter = new JsonFileAdapter<T>(fullname);
+            adapter = new JsonFileAdapter<T>(fullname, _serializerOptions);
         }
 
         return new(adapter);
@@ -115,7 +131,7 @@ public class LowDbBuilder
         {
             ArgumentNullException.ThrowIfNullOrEmpty(_filename, nameof(_filename));
             string fullname = string.IsNullOrEmpty(_folder) ? _filename : Path.Combine(_folder, _filename);
-            adapter = new JsonFileAdapterAsync<T>(fullname);
+            adapter = new JsonFileAdapterAsync<T>(fullname, _serializerOptions);
         }
 
         return new(adapter);

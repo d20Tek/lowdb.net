@@ -3,17 +3,19 @@
 namespace D20Tek.LowDb.Adapters;
 
 /// <summary>
-/// A synchronous storage adapter that persists a document to a JSON file. The document is
-/// serialized with camel-case property names and case-insensitive, trailing-comma-tolerant
-/// deserialization.
+/// A synchronous storage adapter that persists a document to a JSON file. By default, the
+/// document is serialized with camel-case property names and case-insensitive,
+/// trailing-comma-tolerant deserialization, but a custom <see cref="JsonSerializerOptions"/>
+/// can be supplied to override this behavior.
 /// </summary>
 /// <typeparam name="T">The document type to serialize to and from JSON.</typeparam>
 public class JsonFileAdapter<T> : IStorageAdapter<T> where T : class
 {
     private readonly string _filename;
     private readonly TextFileAdapter _textAdapter;
+    private readonly JsonSerializerOptions _serializerOptions;
 
-    private static readonly JsonSerializerOptions _serializerOptions = new()
+    private static readonly JsonSerializerOptions DefaultSerializerOptions = new()
     {
         AllowTrailingCommas = true,
         PropertyNameCaseInsensitive = true,
@@ -25,12 +27,18 @@ public class JsonFileAdapter<T> : IStorageAdapter<T> where T : class
     /// specified JSON file.
     /// </summary>
     /// <param name="filename">The path of the JSON file used for persistence.</param>
+    /// <param name="serializerOptions">
+    /// Optional <see cref="JsonSerializerOptions"/> used to serialize and deserialize the
+    /// document. When <see langword="null"/>, defaults to camel-case property names with
+    /// case-insensitive, trailing-comma-tolerant deserialization.
+    /// </param>
     /// <exception cref="ArgumentException"><paramref name="filename"/> is <see langword="null"/> or empty.</exception>
-    public JsonFileAdapter(string filename)
+    public JsonFileAdapter(string filename, JsonSerializerOptions? serializerOptions = null)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(filename, nameof(filename));
         _filename = filename;
         _textAdapter = new TextFileAdapter(filename);
+        _serializerOptions = serializerOptions ?? DefaultSerializerOptions;
     }
 
     /// <inheritdoc/>
