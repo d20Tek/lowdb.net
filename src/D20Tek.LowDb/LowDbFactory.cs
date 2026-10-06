@@ -1,4 +1,5 @@
 ﻿using D20Tek.LowDb.Adapters;
+using System.Text.Json;
 
 namespace D20Tek.LowDb;
 
@@ -14,10 +15,31 @@ public static class LowDbFactory
     /// </summary>
     /// <typeparam name="T">The document type managed by the database.</typeparam>
     /// <param name="filename">The JSON database file name.</param>
+    /// <param name="serializerOptions">
+    /// Optional <see cref="JsonSerializerOptions"/> used to serialize and deserialize the
+    /// document. When <see langword="null"/>, defaults to camel-case property names with
+    /// case-insensitive, trailing-comma-tolerant deserialization.
+    /// </param>
+    /// <param name="enableBackup">
+    /// When <see langword="true"/>, the previous file content is copied to a sibling
+    /// <c>.bak</c> file before each write, and reads fall back to that backup when the
+    /// primary file is missing or contains invalid JSON.
+    /// </param>
     /// <returns>A configured <see cref="LowDb{T}"/> instance.</returns>
-    public static LowDb<T> CreateJsonLowDb<T>(string filename)
-        where T : class, new() =>
-        new(new JsonFileAdapter<T>(filename));
+    public static LowDb<T> CreateJsonLowDb<T>(
+        string filename,
+        JsonSerializerOptions? serializerOptions = null,
+        bool enableBackup = false)
+        where T : class, new()
+    {
+        IStorageAdapter<T> adapter = new JsonFileAdapter<T>(filename, serializerOptions);
+        if (enableBackup)
+        {
+            adapter = new BackupStorageAdapter<T>(adapter, new JsonFileAdapter<T>(filename + ".bak", serializerOptions));
+        }
+
+        return new(adapter);
+    }
 
     /// <summary>
     /// Creates a synchronous database configured through the supplied builder callback.
@@ -39,10 +61,32 @@ public static class LowDbFactory
     /// </summary>
     /// <typeparam name="T">The document type managed by the database.</typeparam>
     /// <param name="filename">The JSON database file name.</param>
+    /// <param name="serializerOptions">
+    /// Optional <see cref="JsonSerializerOptions"/> used to serialize and deserialize the
+    /// document. When <see langword="null"/>, defaults to camel-case property names with
+    /// case-insensitive, trailing-comma-tolerant deserialization.
+    /// </param>
+    /// <param name="enableBackup">
+    /// When <see langword="true"/>, the previous file content is copied to a sibling
+    /// <c>.bak</c> file before each write, and reads fall back to that backup when the
+    /// primary file is missing or contains invalid JSON.
+    /// </param>
     /// <returns>A configured <see cref="LowDbAsync{T}"/> instance.</returns>
-    public static LowDbAsync<T> CreateJsonLowDbAsync<T>(string filename)
-        where T : class, new() =>
-        new(new JsonFileAdapterAsync<T>(filename));
+    public static LowDbAsync<T> CreateJsonLowDbAsync<T>(
+        string filename,
+        JsonSerializerOptions? serializerOptions = null,
+        bool enableBackup = false)
+        where T : class, new()
+    {
+        IStorageAdapterAsync<T> adapter = new JsonFileAdapterAsync<T>(filename, serializerOptions);
+        if (enableBackup)
+        {
+            adapter = new BackupStorageAdapterAsync<T>(
+                adapter, new JsonFileAdapterAsync<T>(filename + ".bak", serializerOptions));
+        }
+
+        return new(adapter);
+    }
 
     /// <summary>
     /// Creates an asynchronous database configured through the supplied builder callback.

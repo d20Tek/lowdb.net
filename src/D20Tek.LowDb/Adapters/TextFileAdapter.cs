@@ -14,13 +14,15 @@ public class TextFileAdapter(string filename) : IStorageAdapter<string>
     public string? Read()
     {
         EnsureFolderExists();
-        return File.Exists(_filename) is false ? null : File.ReadAllText(_filename);
+
+        return File.Exists(_filename) ? File.ReadAllText(_filename) : null;
     }
 
     /// <inheritdoc/>
     public void Write(string data)
     {
         EnsureFolderExists();
+
         File.WriteAllText(_filename, data);
     }
 

@@ -14,13 +14,15 @@ public class TextFileAdapterAsync(string filename) : IStorageAdapterAsync<string
     public async Task<string?> Read(CancellationToken token = default)
     {
         EnsureFolderExists();
-        return File.Exists(_filename) is false ? null : await File.ReadAllTextAsync(_filename, token);
+
+        return File.Exists(_filename) ? await File.ReadAllTextAsync(_filename, token) : null;
     }
 
     /// <inheritdoc/>
     public async Task Write(string data, CancellationToken token = default)
     {
         EnsureFolderExists();
+
         await File.WriteAllTextAsync(_filename, data, token);
     }
 

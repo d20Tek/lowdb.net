@@ -1,4 +1,5 @@
-﻿using D20Tek.LowDb.UnitTests.Entities;
+﻿using System.Text.Json;
+using D20Tek.LowDb.UnitTests.Entities;
 using FluentAssertions;
 
 namespace D20Tek.LowDb.UnitTests;
@@ -13,6 +14,33 @@ public class LowDbFactoryTests
 
         // act
         var db = LowDbFactory.CreateJsonLowDb<TestDocument>("test.json");
+
+        // assert
+        db.Should().NotBeNull();
+        db.Get().Entities.Should().HaveCount(0);
+    }
+
+    [TestMethod]
+    public void CreateJsonLowDb_WithSerializerOptions_CreateValidDb()
+    {
+        // arrange
+        var options = new JsonSerializerOptions { WriteIndented = true };
+
+        // act
+        var db = LowDbFactory.CreateJsonLowDb<TestDocument>("test-serializer-options.json", options);
+
+        // assert
+        db.Should().NotBeNull();
+        db.Get().Entities.Should().HaveCount(0);
+    }
+
+    [TestMethod]
+    public void CreateJsonLowDb_WithBackupEnabled_CreateValidDb()
+    {
+        // arrange
+
+        // act
+        var db = LowDbFactory.CreateJsonLowDb<TestDocument>("test-backup-enabled.json", enableBackup: true);
 
         // assert
         db.Should().NotBeNull();
@@ -52,6 +80,35 @@ public class LowDbFactoryTests
 
         // act
         var db = LowDbFactory.CreateJsonLowDbAsync<TestDocument>("test.json");
+
+        // assert
+        db.Should().NotBeNull();
+        var result = await db.Get(TestContext.CancellationToken);
+        result.Entities.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task CreateJsonLowDbAsync_WithSerializerOptions_CreateValidDb()
+    {
+        // arrange
+        var options = new JsonSerializerOptions { WriteIndented = true };
+
+        // act
+        var db = LowDbFactory.CreateJsonLowDbAsync<TestDocument>("test-serializer-options-async.json", options);
+
+        // assert
+        db.Should().NotBeNull();
+        var result = await db.Get(TestContext.CancellationToken);
+        result.Entities.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task CreateJsonLowDbAsync_WithBackupEnabled_CreateValidDb()
+    {
+        // arrange
+
+        // act
+        var db = LowDbFactory.CreateJsonLowDbAsync<TestDocument>("test-backup-enabled-async.json", enableBackup: true);
 
         // assert
         db.Should().NotBeNull();

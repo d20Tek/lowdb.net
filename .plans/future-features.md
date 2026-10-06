@@ -24,12 +24,12 @@ Complements the in-process concurrency work: concurrency guards protect within t
 writes protect against crash / torn files. Small, contained change to the two file adapters.
 **Highest priority.**
 
-### 2. Backup / recovery option
+### 2. Backup / recovery option [DONE]
 Optionally keep a `.bak` of the last-good file before overwrite (builder flag `WithBackup()`).
 Cheap insurance for a file-based store; pairs naturally with #1. If deserialization of the main file
 fails on load, optionally fall back to the backup.
 
-### 3. Configurable `JsonSerializerOptions`
+### 3. Configurable `JsonSerializerOptions` [DONE]
 `JsonFileAdapter` currently hardcodes serializer options (camelCase, trailing commas). Consumers
 cannot add converters (enums-as-string, custom date formats), set `WriteIndented`, or supply a
 source-generated `JsonSerializerContext` (which also matters for Blazor WASM AOT / trimming, the
@@ -57,6 +57,21 @@ change.
 There is `Read` / `Write` / `Get` / `Update` but no first-class "clear the database" / delete-file
 operation. Repositories can empty the set, but a `LowDb.Delete()` or adapter `Delete()` would round
 out the lifecycle.
+
+### 8. Extract JSON serialization into a storage adapter decorator
+`JsonFileAdapter<T>` and `JsonFileAdapterAsync<T>` currently couple "persist to a text file" with
+"serialize as JSON" in a single class, each owning its own `TextFileAdapter`/`TextFileAdapterAsync`
+and a duplicated `DefaultSerializerOptions` static field. This mirrors the pattern that backup
+support had before it was refactored into `BackupStorageAdapter<T>` / `BackupStorageAdapterAsync<T>`
+(see #2). A `JsonStorageAdapter<T>` / `JsonStorageAdapterAsync<T>` decorator wrapping any
+`IStorageAdapter<string>` / `IStorageAdapterAsync<string>` would let `TextFileAdapter(Async)` stay a
+pure string store, collapse `JsonFileAdapter<T>` to a thin composition (`Json(Text(filename))`), and
+make backup/JSON composition order explicit (e.g., backing up raw JSON text vs. backing up at a
+different layer). Deferred for now because it does not benefit the browser adapters: 
+`ILocalStorageService`/`ISessionStorageService` perform JSON (de)serialization internally via
+`BrowserStorageOptions.JsonOptions`, so there is no `IStorageAdapterAsync<string>` seam to decorate
+for local/session storage. Revisit if another non-browser, non-JSON-native storage backend
+(e.g., a database blob column) is added, which would make the shared decorator pay off more broadly.
 
 ## Lower priority / scope-watch
 

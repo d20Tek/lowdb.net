@@ -1,4 +1,5 @@
-﻿using D20Tek.LowDb.UnitTests.Entities;
+﻿using System.Text.Json;
+using D20Tek.LowDb.UnitTests.Entities;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,49 @@ public class DependencyInjectionTests
 
         // act
         services.AddLowDb<TestDocument>(filename);
+
+        // assert
+        services.Any(x => x.ServiceType == typeof(LowDb<TestDocument>)).Should().BeTrue();
+
+        // act on service provider
+        var provider = services.BuildServiceProvider();
+
+        // assert
+        var lowdb = provider.GetService<LowDb<TestDocument>>();
+        lowdb.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public void AddLowDb_WithSerializerOptions_AddsDbAndJsonFileAdapter()
+    {
+        // arrange
+        var filename = Path.GetTempFileName();
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        var services = new ServiceCollection();
+
+        // act
+        services.AddLowDb<TestDocument>(filename, serializerOptions: options);
+
+        // assert
+        services.Any(x => x.ServiceType == typeof(LowDb<TestDocument>)).Should().BeTrue();
+
+        // act on service provider
+        var provider = services.BuildServiceProvider();
+
+        // assert
+        var lowdb = provider.GetService<LowDb<TestDocument>>();
+        lowdb.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public void AddLowDb_WithBackupEnabled_AddsDbAndJsonFileAdapter()
+    {
+        // arrange
+        var filename = Path.GetTempFileName();
+        var services = new ServiceCollection();
+
+        // act
+        services.AddLowDb<TestDocument>(filename, enableBackup: true);
 
         // assert
         services.Any(x => x.ServiceType == typeof(LowDb<TestDocument>)).Should().BeTrue();
@@ -84,6 +128,49 @@ public class DependencyInjectionTests
 
         // act
         services.AddLowDbAsync<TestDocument>(filename);
+
+        // assert
+        services.Any(x => x.ServiceType == typeof(LowDbAsync<TestDocument>)).Should().BeTrue();
+
+        // act on service provider
+        var provider = services.BuildServiceProvider();
+
+        // assert
+        var lowdb = provider.GetService<LowDbAsync<TestDocument>>();
+        lowdb.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public void AddLowDbAsync_WithSerializerOptions_AddsDbAndJsonFileAdapter()
+    {
+        // arrange
+        var filename = Path.GetTempFileName();
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        var services = new ServiceCollection();
+
+        // act
+        services.AddLowDbAsync<TestDocument>(filename, serializerOptions: options);
+
+        // assert
+        services.Any(x => x.ServiceType == typeof(LowDbAsync<TestDocument>)).Should().BeTrue();
+
+        // act on service provider
+        var provider = services.BuildServiceProvider();
+
+        // assert
+        var lowdb = provider.GetService<LowDbAsync<TestDocument>>();
+        lowdb.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public void AddLowDbAsync_WithBackupEnabled_AddsDbAndJsonFileAdapter()
+    {
+        // arrange
+        var filename = Path.GetTempFileName();
+        var services = new ServiceCollection();
+
+        // act
+        services.AddLowDbAsync<TestDocument>(filename, enableBackup: true);
 
         // assert
         services.Any(x => x.ServiceType == typeof(LowDbAsync<TestDocument>)).Should().BeTrue();
