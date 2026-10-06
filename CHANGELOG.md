@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Configurable `JsonSerializerOptions` for JSON file persistence. `JsonFileAdapter<T>` and `JsonFileAdapterAsync<T>` now accept an optional `JsonSerializerOptions` constructor parameter, defaulting to the existing camel-case, case-insensitive, trailing-comma-tolerant behavior when not supplied.
 - `LowDbBuilder` gained a `WithJsonSerializerOptions` method, and `LowDbFactory.CreateJsonLowDb`/`CreateJsonLowDbAsync` and the `AddLowDb`/`AddLowDbAsync` dependency injection extensions gained an optional `serializerOptions` parameter, unblocking custom converters, `WriteIndented`, and source-generated `JsonSerializerContext` scenarios (including Blazor WASM AOT / trimming).
+- Optional backup / recovery support for file-backed databases. `TextFileAdapter`, `TextFileAdapterAsync`, `JsonFileAdapter<T>`, and `JsonFileAdapterAsync<T>` now accept an optional `enableBackup` constructor parameter. When enabled, the previous file content is copied to a sibling `.bak` file before each write, and reads fall back to that backup when the primary file is missing or (for the JSON adapters) contains invalid JSON.
+- `LowDbBuilder` gained a `WithBackup()` method, and `LowDbFactory.CreateJsonLowDb`/`CreateJsonLowDbAsync` and the `AddLowDb`/`AddLowDbAsync` dependency injection extensions gained an optional `enableBackup` parameter to opt into this behavior.
 
 ### Changed
 

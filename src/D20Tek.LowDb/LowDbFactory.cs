@@ -20,10 +20,18 @@ public static class LowDbFactory
     /// document. When <see langword="null"/>, defaults to camel-case property names with
     /// case-insensitive, trailing-comma-tolerant deserialization.
     /// </param>
+    /// <param name="enableBackup">
+    /// When <see langword="true"/>, the previous file content is copied to a sibling
+    /// <c>.bak</c> file before each write, and reads fall back to that backup when the
+    /// primary file is missing or contains invalid JSON.
+    /// </param>
     /// <returns>A configured <see cref="LowDb{T}"/> instance.</returns>
-    public static LowDb<T> CreateJsonLowDb<T>(string filename, JsonSerializerOptions? serializerOptions = null)
+    public static LowDb<T> CreateJsonLowDb<T>(
+        string filename,
+        JsonSerializerOptions? serializerOptions = null,
+        bool enableBackup = false)
         where T : class, new() =>
-        new(new JsonFileAdapter<T>(filename, serializerOptions));
+        new(new JsonFileAdapter<T>(filename, serializerOptions, enableBackup));
 
     /// <summary>
     /// Creates a synchronous database configured through the supplied builder callback.
@@ -50,10 +58,18 @@ public static class LowDbFactory
     /// document. When <see langword="null"/>, defaults to camel-case property names with
     /// case-insensitive, trailing-comma-tolerant deserialization.
     /// </param>
+    /// <param name="enableBackup">
+    /// When <see langword="true"/>, the previous file content is copied to a sibling
+    /// <c>.bak</c> file before each write, and reads fall back to that backup when the
+    /// primary file is missing or contains invalid JSON.
+    /// </param>
     /// <returns>A configured <see cref="LowDbAsync{T}"/> instance.</returns>
-    public static LowDbAsync<T> CreateJsonLowDbAsync<T>(string filename, JsonSerializerOptions? serializerOptions = null)
+    public static LowDbAsync<T> CreateJsonLowDbAsync<T>(
+        string filename,
+        JsonSerializerOptions? serializerOptions = null,
+        bool enableBackup = false)
         where T : class, new() =>
-        new(new JsonFileAdapterAsync<T>(filename, serializerOptions));
+        new(new JsonFileAdapterAsync<T>(filename, serializerOptions, enableBackup));
 
     /// <summary>
     /// Creates an asynchronous database configured through the supplied builder callback.

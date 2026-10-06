@@ -24,7 +24,7 @@ Complements the in-process concurrency work: concurrency guards protect within t
 writes protect against crash / torn files. Small, contained change to the two file adapters.
 **Highest priority.**
 
-### 2. Backup / recovery option
+### 2. Backup / recovery option [DONE]
 Optionally keep a `.bak` of the last-good file before overwrite (builder flag `WithBackup()`).
 Cheap insurance for a file-based store; pairs naturally with #1. If deserialization of the main file
 fails on load, optionally fall back to the backup.

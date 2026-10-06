@@ -73,5 +73,54 @@ public class LowDbBuilderTests
         db.Get().Entities.Should().BeEmpty();
     }
 
+    [TestMethod]
+    public void Build_WithBackup_CreatesValidDb()
+    {
+        // arrange
+        var builder = new LowDbBuilder()
+            .UseFileDatabase("builder-with-backup.json")
+            .WithBackup();
+
+        // act
+        var db = builder.Build<TestDocument>();
+
+        // assert
+        db.Should().NotBeNull();
+        db.Get().Entities.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task BuildAsync_WithBackup_CreatesValidDb()
+    {
+        // arrange
+        var builder = new LowDbBuilder()
+            .UseFileDatabase("builder-with-backup-async.json")
+            .WithBackup();
+
+        // act
+        var db = builder.BuildAsync<TestDocument>();
+
+        // assert
+        db.Should().NotBeNull();
+        var result = await db.Get(TestContext.CancellationToken);
+        result.Entities.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public void Build_WithBackupAndInMemoryDatabase_CreatesValidDb()
+    {
+        // arrange
+        var builder = new LowDbBuilder()
+            .UseInMemoryDatabase()
+            .WithBackup();
+
+        // act
+        var db = builder.Build<TestDocument>();
+
+        // assert
+        db.Should().NotBeNull();
+        db.Get().Entities.Should().BeEmpty();
+    }
+
     public TestContext TestContext { get; set; } = default!;
 }

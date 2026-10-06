@@ -23,17 +23,23 @@ public static class DependencyInjection
     /// document. When <see langword="null"/>, defaults to camel-case property names with
     /// case-insensitive, trailing-comma-tolerant deserialization.
     /// </param>
+    /// <param name="enableBackup">
+    /// When <see langword="true"/>, the previous file content is copied to a sibling
+    /// <c>.bak</c> file before each write, and reads fall back to that backup when the
+    /// primary file is missing or contains invalid JSON.
+    /// </param>
     /// <returns>The same service collection so calls can be chained.</returns>
     public static IServiceCollection AddLowDb<T>(
         this IServiceCollection services,
         string filename,
         ServiceLifetime lifetime = ServiceLifetime.Singleton,
-        JsonSerializerOptions? serializerOptions = null)
+        JsonSerializerOptions? serializerOptions = null,
+        bool enableBackup = false)
         where T : class, new()
     {
         ServiceDescriptor descriptor = new(
             typeof(LowDb<T>),
-            sp => new LowDb<T>(new JsonFileAdapter<T>(filename, serializerOptions)),
+            sp => new LowDb<T>(new JsonFileAdapter<T>(filename, serializerOptions, enableBackup)),
             lifetime);
         services.Add(descriptor);
 
@@ -73,17 +79,23 @@ public static class DependencyInjection
     /// document. When <see langword="null"/>, defaults to camel-case property names with
     /// case-insensitive, trailing-comma-tolerant deserialization.
     /// </param>
+    /// <param name="enableBackup">
+    /// When <see langword="true"/>, the previous file content is copied to a sibling
+    /// <c>.bak</c> file before each write, and reads fall back to that backup when the
+    /// primary file is missing or contains invalid JSON.
+    /// </param>
     /// <returns>The same service collection so calls can be chained.</returns>
     public static IServiceCollection AddLowDbAsync<T>(
         this IServiceCollection services,
         string filename,
         ServiceLifetime lifetime = ServiceLifetime.Singleton,
-        JsonSerializerOptions? serializerOptions = null)
+        JsonSerializerOptions? serializerOptions = null,
+        bool enableBackup = false)
         where T : class, new()
     {
         ServiceDescriptor descriptor = new(
             typeof(LowDbAsync<T>),
-            sp => new LowDbAsync<T>(new JsonFileAdapterAsync<T>(filename, serializerOptions)),
+            sp => new LowDbAsync<T>(new JsonFileAdapterAsync<T>(filename, serializerOptions, enableBackup)),
             lifetime);
         services.Add(descriptor);
 

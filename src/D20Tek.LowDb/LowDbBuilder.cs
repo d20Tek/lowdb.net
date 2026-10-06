@@ -16,6 +16,7 @@ public class LowDbBuilder
     private string _folder = string.Empty;
     private bool _useMemoryAdapter = false;
     private JsonSerializerOptions? _serializerOptions;
+    private bool _enableBackup = false;
 
     /// <summary>
     /// Gets the service lifetime that dependency injection registrations should use for the
@@ -76,6 +77,19 @@ public class LowDbBuilder
     }
 
     /// <summary>
+    /// Enables backup support for the JSON file database. Before each write, the previous
+    /// file content is copied to a sibling <c>.bak</c> file, and reads fall back to that
+    /// backup when the primary file is missing or contains invalid JSON. Has no effect when
+    /// <see cref="UseInMemoryDatabase"/> is used.
+    /// </summary>
+    /// <returns>The same builder instance so calls can be chained.</returns>
+    public LowDbBuilder WithBackup()
+    {
+        _enableBackup = true;
+        return this;
+    }
+
+    /// <summary>
     /// Sets the service lifetime used when the database is registered with a dependency
     /// injection container.
     /// </summary>
@@ -106,7 +120,7 @@ public class LowDbBuilder
         {
             ArgumentNullException.ThrowIfNullOrEmpty(_filename, nameof(_filename));
             string fullname = string.IsNullOrEmpty(_folder) ? _filename : Path.Combine(_folder, _filename);
-            adapter = new JsonFileAdapter<T>(fullname, _serializerOptions);
+            adapter = new JsonFileAdapter<T>(fullname, _serializerOptions, _enableBackup);
         }
 
         return new(adapter);
@@ -131,7 +145,7 @@ public class LowDbBuilder
         {
             ArgumentNullException.ThrowIfNullOrEmpty(_filename, nameof(_filename));
             string fullname = string.IsNullOrEmpty(_folder) ? _filename : Path.Combine(_folder, _filename);
-            adapter = new JsonFileAdapterAsync<T>(fullname, _serializerOptions);
+            adapter = new JsonFileAdapterAsync<T>(fullname, _serializerOptions, _enableBackup);
         }
 
         return new(adapter);

@@ -35,6 +35,19 @@ public class LowDbFactoryTests
     }
 
     [TestMethod]
+    public void CreateJsonLowDb_WithBackupEnabled_CreateValidDb()
+    {
+        // arrange
+
+        // act
+        var db = LowDbFactory.CreateJsonLowDb<TestDocument>("test-backup-enabled.json", enableBackup: true);
+
+        // assert
+        db.Should().NotBeNull();
+        db.Get().Entities.Should().HaveCount(0);
+    }
+
+    [TestMethod]
     public void CreateLowDb_CreateValidDb()
     {
         // arrange
@@ -82,6 +95,20 @@ public class LowDbFactoryTests
 
         // act
         var db = LowDbFactory.CreateJsonLowDbAsync<TestDocument>("test-serializer-options-async.json", options);
+
+        // assert
+        db.Should().NotBeNull();
+        var result = await db.Get(TestContext.CancellationToken);
+        result.Entities.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task CreateJsonLowDbAsync_WithBackupEnabled_CreateValidDb()
+    {
+        // arrange
+
+        // act
+        var db = LowDbFactory.CreateJsonLowDbAsync<TestDocument>("test-backup-enabled-async.json", enableBackup: true);
 
         // assert
         db.Should().NotBeNull();
