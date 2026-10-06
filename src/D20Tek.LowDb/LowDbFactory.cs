@@ -30,8 +30,16 @@ public static class LowDbFactory
         string filename,
         JsonSerializerOptions? serializerOptions = null,
         bool enableBackup = false)
-        where T : class, new() =>
-        new(new JsonFileAdapter<T>(filename, serializerOptions, enableBackup));
+        where T : class, new()
+    {
+        IStorageAdapter<T> adapter = new JsonFileAdapter<T>(filename, serializerOptions);
+        if (enableBackup)
+        {
+            adapter = new BackupStorageAdapter<T>(adapter, new JsonFileAdapter<T>(filename + ".bak", serializerOptions));
+        }
+
+        return new(adapter);
+    }
 
     /// <summary>
     /// Creates a synchronous database configured through the supplied builder callback.
@@ -68,8 +76,17 @@ public static class LowDbFactory
         string filename,
         JsonSerializerOptions? serializerOptions = null,
         bool enableBackup = false)
-        where T : class, new() =>
-        new(new JsonFileAdapterAsync<T>(filename, serializerOptions, enableBackup));
+        where T : class, new()
+    {
+        IStorageAdapterAsync<T> adapter = new JsonFileAdapterAsync<T>(filename, serializerOptions);
+        if (enableBackup)
+        {
+            adapter = new BackupStorageAdapterAsync<T>(
+                adapter, new JsonFileAdapterAsync<T>(filename + ".bak", serializerOptions));
+        }
+
+        return new(adapter);
+    }
 
     /// <summary>
     /// Creates an asynchronous database configured through the supplied builder callback.

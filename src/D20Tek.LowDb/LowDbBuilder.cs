@@ -120,7 +120,12 @@ public class LowDbBuilder
         {
             ArgumentNullException.ThrowIfNullOrEmpty(_filename, nameof(_filename));
             string fullname = string.IsNullOrEmpty(_folder) ? _filename : Path.Combine(_folder, _filename);
-            adapter = new JsonFileAdapter<T>(fullname, _serializerOptions, _enableBackup);
+            adapter = new JsonFileAdapter<T>(fullname, _serializerOptions);
+            if (_enableBackup)
+            {
+                adapter = new BackupStorageAdapter<T>(
+                    adapter, new JsonFileAdapter<T>(fullname + ".bak", _serializerOptions));
+            }
         }
 
         return new(adapter);
@@ -145,7 +150,12 @@ public class LowDbBuilder
         {
             ArgumentNullException.ThrowIfNullOrEmpty(_filename, nameof(_filename));
             string fullname = string.IsNullOrEmpty(_folder) ? _filename : Path.Combine(_folder, _filename);
-            adapter = new JsonFileAdapterAsync<T>(fullname, _serializerOptions, _enableBackup);
+            adapter = new JsonFileAdapterAsync<T>(fullname, _serializerOptions);
+            if (_enableBackup)
+            {
+                adapter = new BackupStorageAdapterAsync<T>(
+                    adapter, new JsonFileAdapterAsync<T>(fullname + ".bak", _serializerOptions));
+            }
         }
 
         return new(adapter);

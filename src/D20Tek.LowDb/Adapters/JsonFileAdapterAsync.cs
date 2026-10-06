@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace D20Tek.LowDb.Adapters;
 
@@ -15,7 +14,6 @@ public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T> where T : class
     private readonly string _filename;
     private readonly TextFileAdapterAsync _textAdapter;
     private readonly JsonSerializerOptions _serializerOptions;
-    private readonly bool _enableBackup;
 
     private static readonly JsonSerializerOptions DefaultSerializerOptions = new()
     {
@@ -34,42 +32,20 @@ public class JsonFileAdapterAsync<T> : IStorageAdapterAsync<T> where T : class
     /// document. When <see langword="null"/>, defaults to camel-case property names with
     /// case-insensitive, trailing-comma-tolerant deserialization.
     /// </param>
-    /// <param name="enableBackup">
-    /// When <see langword="true"/>, the previous file content is copied to a sibling
-    /// <c>.bak</c> file before each write. <see cref="Read"/> falls back to that backup
-    /// when the primary file is missing or contains invalid JSON.
-    /// </param>
     /// <exception cref="ArgumentException"><paramref name="filename"/> is <see langword="null"/> or empty.</exception>
-    public JsonFileAdapterAsync(
-        string filename,
-        JsonSerializerOptions? serializerOptions = null,
-        bool enableBackup = false)
+    public JsonFileAdapterAsync(string filename, JsonSerializerOptions? serializerOptions = null)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(filename, nameof(filename));
         _filename = filename;
-        _textAdapter = new TextFileAdapterAsync(filename, enableBackup);
+        _textAdapter = new TextFileAdapterAsync(filename);
         _serializerOptions = serializerOptions ?? DefaultSerializerOptions;
-        _enableBackup = enableBackup;
     }
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
     public async Task<T?> Read(CancellationToken token = default)
     {
         var json = await _textAdapter.Read(token);
-        if (string.IsNullOrEmpty(json)) return null;
-
-        try
-        {
-            return JsonSerializer.Deserialize<T>(json, _serializerOptions);
-        }
-        catch (JsonException) when (_enableBackup)
-        {
-            var backupJson = await _textAdapter.ReadBackup(token);
-            if (string.IsNullOrEmpty(backupJson)) throw;
-
-            return JsonSerializer.Deserialize<T>(backupJson, _serializerOptions);
-        }
+        return string.IsNullOrEmpty(json) ? null : JsonSerializer.Deserialize<T>(json, _serializerOptions);
     }
 
     /// <inheritdoc/>

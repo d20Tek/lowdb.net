@@ -1,4 +1,5 @@
 ﻿using D20Tek.Blazor.BrowserStorage;
+using D20Tek.LowDb.Adapters;
 using D20Tek.LowDb.Browser.Adapters;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -41,10 +42,19 @@ public static class DependencyInjection
 
         ServiceDescriptor descriptor = new(
             typeof(LowDbAsync<T>),
-            sp => new LowDbAsync<T>(
-                new LocalStorageAdapterAsync<T>(
-                    keyname, sp.GetRequiredService<ILocalStorageService>(), enableBackup)),
-                lifetime);
+            sp =>
+            {
+                var localStorage = sp.GetRequiredService<ILocalStorageService>();
+                IStorageAdapterAsync<T> adapter = new LocalStorageAdapterAsync<T>(keyname, localStorage);
+                if (enableBackup)
+                {
+                    adapter = new BackupStorageAdapterAsync<T>(
+                        adapter, new LocalStorageAdapterAsync<T>(keyname + ".bak", localStorage));
+                }
+
+                return new LowDbAsync<T>(adapter);
+            },
+            lifetime);
         services.Add(descriptor);
 
         return services;
@@ -80,10 +90,19 @@ public static class DependencyInjection
 
         ServiceDescriptor descriptor = new(
             typeof(LowDbAsync<T>),
-            sp => new LowDbAsync<T>(
-                new SessionStorageAdapterAsync<T>(
-                    keyname, sp.GetRequiredService<ISessionStorageService>(), enableBackup)),
-                lifetime);
+            sp =>
+            {
+                var sessionStorage = sp.GetRequiredService<ISessionStorageService>();
+                IStorageAdapterAsync<T> adapter = new SessionStorageAdapterAsync<T>(keyname, sessionStorage);
+                if (enableBackup)
+                {
+                    adapter = new BackupStorageAdapterAsync<T>(
+                        adapter, new SessionStorageAdapterAsync<T>(keyname + ".bak", sessionStorage));
+                }
+
+                return new LowDbAsync<T>(adapter);
+            },
+            lifetime);
         services.Add(descriptor);
 
         return services;

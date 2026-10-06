@@ -39,7 +39,17 @@ public static class DependencyInjection
     {
         ServiceDescriptor descriptor = new(
             typeof(LowDb<T>),
-            sp => new LowDb<T>(new JsonFileAdapter<T>(filename, serializerOptions, enableBackup)),
+            sp =>
+            {
+                IStorageAdapter<T> adapter = new JsonFileAdapter<T>(filename, serializerOptions);
+                if (enableBackup)
+                {
+                    adapter = new BackupStorageAdapter<T>(
+                        adapter, new JsonFileAdapter<T>(filename + ".bak", serializerOptions));
+                }
+
+                return new LowDb<T>(adapter);
+            },
             lifetime);
         services.Add(descriptor);
 
@@ -95,7 +105,17 @@ public static class DependencyInjection
     {
         ServiceDescriptor descriptor = new(
             typeof(LowDbAsync<T>),
-            sp => new LowDbAsync<T>(new JsonFileAdapterAsync<T>(filename, serializerOptions, enableBackup)),
+            sp =>
+            {
+                IStorageAdapterAsync<T> adapter = new JsonFileAdapterAsync<T>(filename, serializerOptions);
+                if (enableBackup)
+                {
+                    adapter = new BackupStorageAdapterAsync<T>(
+                        adapter, new JsonFileAdapterAsync<T>(filename + ".bak", serializerOptions));
+                }
+
+                return new LowDbAsync<T>(adapter);
+            },
             lifetime);
         services.Add(descriptor);
 
