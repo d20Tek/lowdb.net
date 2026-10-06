@@ -58,6 +58,21 @@ There is `Read` / `Write` / `Get` / `Update` but no first-class "clear the datab
 operation. Repositories can empty the set, but a `LowDb.Delete()` or adapter `Delete()` would round
 out the lifecycle.
 
+### 8. Extract JSON serialization into a storage adapter decorator
+`JsonFileAdapter<T>` and `JsonFileAdapterAsync<T>` currently couple "persist to a text file" with
+"serialize as JSON" in a single class, each owning its own `TextFileAdapter`/`TextFileAdapterAsync`
+and a duplicated `DefaultSerializerOptions` static field. This mirrors the pattern that backup
+support had before it was refactored into `BackupStorageAdapter<T>` / `BackupStorageAdapterAsync<T>`
+(see #2). A `JsonStorageAdapter<T>` / `JsonStorageAdapterAsync<T>` decorator wrapping any
+`IStorageAdapter<string>` / `IStorageAdapterAsync<string>` would let `TextFileAdapter(Async)` stay a
+pure string store, collapse `JsonFileAdapter<T>` to a thin composition (`Json(Text(filename))`), and
+make backup/JSON composition order explicit (e.g., backing up raw JSON text vs. backing up at a
+different layer). Deferred for now because it does not benefit the browser adapters: 
+`ILocalStorageService`/`ISessionStorageService` perform JSON (de)serialization internally via
+`BrowserStorageOptions.JsonOptions`, so there is no `IStorageAdapterAsync<string>` seam to decorate
+for local/session storage. Revisit if another non-browser, non-JSON-native storage backend
+(e.g., a database blob column) is added, which would make the shared decorator pay off more broadly.
+
 ## Lower priority / scope-watch
 
 ### 8. Optimistic-concurrency version stamp
