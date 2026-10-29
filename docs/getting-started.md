@@ -20,6 +20,7 @@ pattern, and browser storage for Blazor apps. For the conceptual background, see
 * [9. Adding the repository pattern](#9-adding-the-repository-pattern)
 * [10. Using browser storage in Blazor](#10-using-browser-storage-in-blazor)
 * [11. Testing with the in-memory adapter](#11-testing-with-the-in-memory-adapter)
+* [12. Reacting to changes with events](#12-reacting-to-changes-with-events)
 * [Next steps](#next-steps)
 
 ## Prerequisites
@@ -312,6 +313,38 @@ var db = LowDbFactory.CreateLowDb<TasksDocument>(b => b.UseInMemoryDatabase());
 
 This is the same mechanism the `Sample.Cli` and `Sample.AsyncCli` projects use to support an
 `--in-memory` command-line switch for local development.
+
+## 12. Reacting to changes with events
+
+Both `LowDb<T>` and `LowDbAsync<T>` expose a `Changed` event that is raised after the document has
+been successfully written to storage. This is useful for refreshing a Blazor UI, invalidating a
+cache, or writing an audit entry:
+
+```csharp
+var db = LowDbFactory.CreateJsonLowDb<TasksDocument>("my-tasks.json");
+
+db.Changed += (sender, e) =>
+    Console.WriteLine($"Saved. The document now has {e.Document.Tasks.Count} tasks.");
+
+// Raises Changed once, after the write succeeds.
+db.Update(x => x.Tasks.Add(new TaskEntity { Id = x.GetNextId(), Name = "Write docs" }));
+```
+
+The async database uses the same standard event signature, so handlers stay synchronous:
+
+```csharp
+db.Changed += (sender, e) => InvokeAsync(StateHasChanged);
+```
+
+A few rules worth knowing:
+
+* The event is raised only when the storage write succeeds. If the adapter throws, the exception
+  propagates to the caller and no notification is sent.
+* Batched updates using `autoSave: false` do not raise the event. The deferred changes are
+  reported by the single `Write()` call that persists them.
+* Handlers run after the internal lock or semaphore is released, so a handler can safely call back
+  into the same database instance.
+* `e.Document` is the live in-memory document, not a copy. Treat it as read-only inside handlers.
 
 ## Next steps
 

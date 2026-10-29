@@ -7,6 +7,7 @@ adapters, a fluent builder, factory methods, and dependency injection extensions
 ## Table of Contents
 * [LowDb\<T\>](#lowdbt)
 * [LowDbAsync\<T\>](#lowdbasynct)
+* [DocumentChangedEventArgs\<T\>](#documentchangedeventargst)
 * [IStorageAdapter\<T\>](#istorageadaptert)
 * [IStorageAdapterAsync\<T\>](#istorageadapterasynct)
 * [Adapters](#adapters)
@@ -53,6 +54,21 @@ overwrite one another's changes.
 | `void Write()` | Persists the current in-memory document to storage. |
 | `T Get()` | Gets the current in-memory document, loading it from storage on first access. Mutations to the returned instance are reflected in the database. |
 | `void Update(Action<T> updateAction, bool autoSave = true)` | Applies a mutation to the document; by default persists the result as part of the same serialized operation. |
+| `event EventHandler<DocumentChangedEventArgs<T>>? Changed` | Raised after the document has been successfully persisted to storage, by either `Write()` or `Update(..., autoSave: true)`. |
+
+### Change notification
+
+The `Changed` event is raised only after the storage adapter write completes successfully. If the
+adapter throws, the exception propagates to the caller and no notification is sent. Calling
+`Update(..., autoSave: false)` does not raise the event; the pending change is reported by the
+next explicit `Write()`.
+
+Handlers are invoked after the internal lock has been released, so a handler may safely call back
+into the same database instance without deadlocking.
+
+```csharp
+db.Changed += (sender, e) => Console.WriteLine($"Saved {e.Document.Tasks.Count} tasks.");
+```
 
 ### Example
 
@@ -95,6 +111,18 @@ persists it through an `IStorageAdapterAsync<T>`. Access is serialized with an i
 | `Task<T> Get(CancellationToken token = default)` | Gets the current in-memory document, loading it from storage on first access. |
 | `Task Update(Action<T> updateAction, bool autoSave = true, CancellationToken token = default)` | Applies a mutation to the document; by default persists the result as part of the same serialized operation. |
 | `void Dispose()` | Releases the internal `SemaphoreSlim` used to guard concurrent access. |
+| `event EventHandler<DocumentChangedEventArgs<T>>? Changed` | Raised after the document has been successfully persisted to storage, by either `Write()` or `Update(..., autoSave: true)`. |
+
+### Change notification
+
+The semantics match `LowDb<T>`: the event is raised only after the awaited adapter write succeeds,
+and `Update(..., autoSave: false)` defers notification until the next explicit `Write()`.
+Handlers use the standard synchronous `EventHandler<TEventArgs>` signature and are invoked after
+the internal `SemaphoreSlim` has been released, so a handler may call back into the same instance.
+
+```csharp
+db.Changed += (sender, e) => InvokeAsync(StateHasChanged);
+```
 
 ### Example
 
@@ -105,6 +133,36 @@ await db.Update(x => x.Tasks.Add(new TaskEntity { Id = x.GetNextId(), Name = "Sh
 
 var document = await db.Get();
 ```
+
+---
+
+## DocumentChangedEventArgs\<T\>
+
+```csharp
+namespace D20Tek.LowDb;
+
+public class DocumentChangedEventArgs<T>(T document) : EventArgs
+	where T : class
+```
+
+Provides data for the change notification raised after a LowDb document has been successfully
+persisted to its underlying storage adapter.
+
+### Constructor
+
+| Parameter | Type | Description |
+|---|---|---|
+| `document` | `T` | The document instance that was written to storage. |
+
+### Members
+
+| Member | Description |
+|---|---|
+| `T Document` | Gets the document instance that was written to storage. |
+
+The `Document` property exposes the live in-memory document rather than a copy, so handlers should
+treat it as read-only. Mutating it from a handler changes database state outside of a normal
+update operation and the change will not be persisted until the next write.
 
 ---
 

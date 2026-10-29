@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Release v1.4.4
+
+### Added
+
+- Change notification support on the core databases. `LowDb<T>` and `LowDbAsync<T>` now expose an `event EventHandler<DocumentChangedEventArgs<T>>? Changed` that is raised after the document has been successfully persisted, by either an explicit `Write` or an `Update` with auto-save enabled. The new `DocumentChangedEventArgs<T>` type carries the persisted document through its `Document` property. The event is not raised when the storage write fails or when `Update` is called with `autoSave: false`, and handlers are invoked after the internal lock or semaphore is released so they can safely call back into the database instance.
+
+### Changed
+
+- Updated package references to the newest versions.
+
 ## Release v1.4.3
 
 ### Added

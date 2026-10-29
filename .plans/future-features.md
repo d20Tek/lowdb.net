@@ -38,7 +38,7 @@ through the builder, factory, and adapter constructors.
 
 ## Medium value
 
-### 4. Change notification / events
+### 4. Change notification / events [DONE]
 A `Changed` event (or callback) fired after a successful `Write`, useful for Blazor UI refresh,
 cache invalidation, or audit. The BrowserStorage package already uses this pattern, so it would be
 API-consistent across the family.
