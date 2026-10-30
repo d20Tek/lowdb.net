@@ -38,12 +38,12 @@ through the builder, factory, and adapter constructors.
 
 ## Medium value
 
-### 4. Change notification / events
+### 4. Change notification / events [DONE]
 A `Changed` event (or callback) fired after a successful `Write`, useful for Blazor UI refresh,
 cache invalidation, or audit. The BrowserStorage package already uses this pattern, so it would be
 API-consistent across the family.
 
-### 5. `IAsyncDisposable` + `FlushAsync` for `LowDbAsync`
+### 5. `IAsyncDisposable` + `FlushAsync` for `LowDbAsync` [DONE]
 `IDisposable` is already implemented. For the batched-write pattern, an explicit `FlushAsync` alias
 for `Write` reads better at call sites, and `IAsyncDisposable` could auto-flush pending unsaved
 changes on dispose (opt-in, to avoid surprises).

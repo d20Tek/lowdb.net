@@ -71,11 +71,16 @@ public static class LowDbFactory
     /// <c>.bak</c> file before each write, and reads fall back to that backup when the
     /// primary file is missing or contains invalid JSON.
     /// </param>
+    /// <param name="autoFlushOnDispose">
+    /// When <see langword="true"/>, disposing the database with <c>await using</c> persists
+    /// any pending unsaved changes before releasing resources.
+    /// </param>
     /// <returns>A configured <see cref="LowDbAsync{T}"/> instance.</returns>
     public static LowDbAsync<T> CreateJsonLowDbAsync<T>(
         string filename,
         JsonSerializerOptions? serializerOptions = null,
-        bool enableBackup = false)
+        bool enableBackup = false,
+        bool autoFlushOnDispose = false)
         where T : class, new()
     {
         IStorageAdapterAsync<T> adapter = new JsonFileAdapterAsync<T>(filename, serializerOptions);
@@ -85,7 +90,7 @@ public static class LowDbFactory
                 adapter, new JsonFileAdapterAsync<T>(filename + ".bak", serializerOptions));
         }
 
-        return new(adapter);
+        return new(adapter, autoFlushOnDispose: autoFlushOnDispose);
     }
 
     /// <summary>

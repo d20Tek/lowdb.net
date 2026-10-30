@@ -7,6 +7,7 @@ adapters, a fluent builder, factory methods, and dependency injection extensions
 ## Table of Contents
 * [LowDb\<T\>](#lowdbt)
 * [LowDbAsync\<T\>](#lowdbasynct)
+* [DocumentChangedEventArgs\<T\>](#documentchangedeventargst)
 * [IStorageAdapter\<T\>](#istorageadaptert)
 * [IStorageAdapterAsync\<T\>](#istorageadapterasynct)
 * [Adapters](#adapters)
@@ -53,6 +54,21 @@ overwrite one another's changes.
 | `void Write()` | Persists the current in-memory document to storage. |
 | `T Get()` | Gets the current in-memory document, loading it from storage on first access. Mutations to the returned instance are reflected in the database. |
 | `void Update(Action<T> updateAction, bool autoSave = true)` | Applies a mutation to the document; by default persists the result as part of the same serialized operation. |
+| `event EventHandler<DocumentChangedEventArgs<T>>? Changed` | Raised after the document has been successfully persisted to storage, by either `Write()` or `Update(..., autoSave: true)`. |
+
+### Change notification
+
+The `Changed` event is raised only after the storage adapter write completes successfully. If the
+adapter throws, the exception propagates to the caller and no notification is sent. Calling
+`Update(..., autoSave: false)` does not raise the event; the pending change is reported by the
+next explicit `Write()`.
+
+Handlers are invoked after the internal lock has been released, so a handler may safely call back
+into the same database instance without deadlocking.
+
+```csharp
+db.Changed += (sender, e) => Console.WriteLine($"Saved {e.Document.Tasks.Count} tasks.");
+```
 
 ### Example
 
@@ -71,7 +87,10 @@ var document = db.Get();
 ```csharp
 namespace D20Tek.LowDb;
 
-public class LowDbAsync<T>(IStorageAdapterAsync<T> storageAdapter, T? data = null) : IDisposable
+public class LowDbAsync<T>(
+	IStorageAdapterAsync<T> storageAdapter,
+	T? data = null,
+	bool autoFlushOnDispose = false) : IDisposable, IAsyncDisposable
 	where T : class, new()
 ```
 
@@ -85,6 +104,7 @@ persists it through an `IStorageAdapterAsync<T>`. Access is serialized with an i
 |---|---|---|
 | `storageAdapter` | `IStorageAdapterAsync<T>` | The asynchronous storage adapter used to read and write the document. |
 | `data` | `T?` | Optional pre-loaded document. When supplied, the database skips the initial read from storage. |
+| `autoFlushOnDispose` | `bool` | When `true`, `DisposeAsync` persists any pending unsaved changes before releasing resources. Defaults to `false` so disposal never performs unexpected writes. |
 
 ### Members
 
@@ -92,9 +112,51 @@ persists it through an `IStorageAdapterAsync<T>`. Access is serialized with an i
 |---|---|
 | `Task Read(CancellationToken token = default)` | Reads the document from storage and replaces the in-memory state. |
 | `Task Write(CancellationToken token = default)` | Persists the current in-memory document to storage. |
+| `Task FlushAsync(CancellationToken token = default)` | Alias for `Write` that reads more naturally at the end of a batched-update sequence. Always writes. |
 | `Task<T> Get(CancellationToken token = default)` | Gets the current in-memory document, loading it from storage on first access. |
 | `Task Update(Action<T> updateAction, bool autoSave = true, CancellationToken token = default)` | Applies a mutation to the document; by default persists the result as part of the same serialized operation. |
-| `void Dispose()` | Releases the internal `SemaphoreSlim` used to guard concurrent access. |
+| `bool HasPendingChanges` | Indicates whether the document has changes that have not yet been persisted. Set by `Update(..., autoSave: false)`, cleared by any successful read or write. |
+| `void Dispose()` | Releases the internal `SemaphoreSlim`. Never flushes pending changes. |
+| `ValueTask DisposeAsync()` | Releases resources, first persisting pending changes when `autoFlushOnDispose` is enabled. |
+| `event EventHandler<DocumentChangedEventArgs<T>>? Changed` | Raised after the document has been successfully persisted to storage, by either `Write()` or `Update(..., autoSave: true)`. |
+
+### Flushing and disposal
+
+`FlushAsync` is a plain alias for `Write`: it always performs a storage write and always raises
+`Changed`, even when nothing is pending. It exists to make batched-update call sites read clearly.
+
+```csharp
+await db.Update(x => x.Tasks.Add(first), autoSave: false);
+await db.Update(x => x.Tasks.Add(second), autoSave: false);
+await db.FlushAsync();
+```
+
+`DisposeAsync` only writes when the database was constructed with `autoFlushOnDispose: true` *and*
+`HasPendingChanges` is `true`, so a clean database is never written on disposal. When it does
+flush, the `Changed` event is raised exactly as it would be for a normal write.
+
+```csharp
+await using var db = LowDbFactory.CreateJsonLowDbAsync<TasksDocument>(
+    "my-tasks.json", autoFlushOnDispose: true);
+
+// Deferred change is persisted automatically when the scope exits.
+await db.Update(x => x.Tasks.Add(newTask), autoSave: false);
+```
+
+The synchronous `Dispose()` never flushes, because persisting requires awaiting the asynchronous
+storage adapter. Use `await using` whenever auto-flush is enabled. Both dispose paths are safe to
+call more than once, and in either order.
+
+### Change notification
+
+The semantics match `LowDb<T>`: the event is raised only after the awaited adapter write succeeds,
+and `Update(..., autoSave: false)` defers notification until the next explicit `Write()`.
+Handlers use the standard synchronous `EventHandler<TEventArgs>` signature and are invoked after
+the internal `SemaphoreSlim` has been released, so a handler may call back into the same instance.
+
+```csharp
+db.Changed += (sender, e) => InvokeAsync(StateHasChanged);
+```
 
 ### Example
 
@@ -105,6 +167,36 @@ await db.Update(x => x.Tasks.Add(new TaskEntity { Id = x.GetNextId(), Name = "Sh
 
 var document = await db.Get();
 ```
+
+---
+
+## DocumentChangedEventArgs\<T\>
+
+```csharp
+namespace D20Tek.LowDb;
+
+public class DocumentChangedEventArgs<T>(T document) : EventArgs
+	where T : class
+```
+
+Provides data for the change notification raised after a LowDb document has been successfully
+persisted to its underlying storage adapter.
+
+### Constructor
+
+| Parameter | Type | Description |
+|---|---|---|
+| `document` | `T` | The document instance that was written to storage. |
+
+### Members
+
+| Member | Description |
+|---|---|
+| `T Document` | Gets the document instance that was written to storage. |
+
+The `Document` property exposes the live in-memory document rather than a copy, so handlers should
+treat it as read-only. Mutating it from a handler changes database state outside of a normal
+update operation and the change will not be persisted until the next write.
 
 ---
 
@@ -252,6 +344,7 @@ and the dependency injection service lifetime.
 | `LowDbBuilder WithFolder(string folderName)` | Sets the folder in which the database file is stored, combined with the file name from `UseFileDatabase`. |
 | `LowDbBuilder WithJsonSerializerOptions(JsonSerializerOptions serializerOptions)` | Sets the `JsonSerializerOptions` used to serialize/deserialize the document. Has no effect for in-memory databases. |
 | `LowDbBuilder WithBackup()` | Enables backup support for the JSON file database by composing a `BackupStorageAdapter<T>`/`BackupStorageAdapterAsync<T>` around the primary adapter. Has no effect for in-memory databases. |
+| `LowDbBuilder WithAutoFlushOnDispose()` | Enables auto-flush on asynchronous disposal for the database built by `BuildAsync<T>()`. Has no effect on the synchronous database built by `Build<T>()`. |
 | `LowDbBuilder WithLifetime(ServiceLifetime serviceLifetime)` | Sets the service lifetime used when the database is registered with a dependency injection container. |
 | `LowDb<T> Build<T>()` | Builds a synchronous `LowDb<T>` instance using the configured storage backend. |
 | `LowDbAsync<T> BuildAsync<T>()` | Builds an asynchronous `LowDbAsync<T>` instance using the configured storage backend. |
@@ -287,7 +380,7 @@ from a JSON file name or through a fluent `LowDbBuilder` configuration callback.
 |---|---|
 | `LowDb<T> CreateJsonLowDb<T>(string filename, JsonSerializerOptions? serializerOptions = null, bool enableBackup = false)` | Creates a synchronous JSON file-backed database using the specified file name. |
 | `LowDb<T> CreateLowDb<T>(Action<LowDbBuilder> builderAction)` | Creates a synchronous database configured through the supplied builder callback. |
-| `LowDbAsync<T> CreateJsonLowDbAsync<T>(string filename, JsonSerializerOptions? serializerOptions = null, bool enableBackup = false)` | Creates an asynchronous JSON file-backed database using the specified file name. |
+| `LowDbAsync<T> CreateJsonLowDbAsync<T>(string filename, JsonSerializerOptions? serializerOptions = null, bool enableBackup = false, bool autoFlushOnDispose = false)` | Creates an asynchronous JSON file-backed database using the specified file name. |
 | `LowDbAsync<T> CreateLowDbAsync<T>(Action<LowDbBuilder> builderAction)` | Creates an asynchronous database configured through the supplied builder callback. |
 
 When `enableBackup` is `true`, these methods compose a `BackupStorageAdapter<T>` /
@@ -312,7 +405,7 @@ Extension methods on `IServiceCollection` for registering `LowDb<T>` and `LowDbA
 |---|---|
 | `IServiceCollection AddLowDb<T>(this IServiceCollection services, string filename, ServiceLifetime lifetime = ServiceLifetime.Singleton, JsonSerializerOptions? serializerOptions = null, bool enableBackup = false)` | Registers a synchronous JSON file-backed `LowDb<T>`. |
 | `IServiceCollection AddLowDb<T>(this IServiceCollection services, Action<LowDbBuilder> builderAction)` | Registers a synchronous `LowDb<T>` configured through a builder callback. The lifetime comes from `LowDbBuilder.ServiceLifetime`. |
-| `IServiceCollection AddLowDbAsync<T>(this IServiceCollection services, string filename, ServiceLifetime lifetime = ServiceLifetime.Singleton, JsonSerializerOptions? serializerOptions = null, bool enableBackup = false)` | Registers an asynchronous JSON file-backed `LowDbAsync<T>`. |
+| `IServiceCollection AddLowDbAsync<T>(this IServiceCollection services, string filename, ServiceLifetime lifetime = ServiceLifetime.Singleton, JsonSerializerOptions? serializerOptions = null, bool enableBackup = false, bool autoFlushOnDispose = false)` | Registers an asynchronous JSON file-backed `LowDbAsync<T>`. |
 | `IServiceCollection AddLowDbAsync<T>(this IServiceCollection services, Action<LowDbBuilder> builderAction)` | Registers an asynchronous `LowDbAsync<T>` configured through a builder callback. |
 
 ### Example

@@ -86,8 +86,8 @@ instances. Each method also registers the required `D20Tek.Blazor.BrowserStorage
 
 | Member | Description |
 |---|---|
-| `IServiceCollection AddLocalLowDbAsync<T>(this IServiceCollection services, string keyname, ServiceLifetime lifetime = ServiceLifetime.Scoped, Action<BrowserStorageOptions>? configureStorage = null, bool enableBackup = false)` | Registers an asynchronous `LowDbAsync<T>` backed by the browser's local storage, and registers local storage services via `AddLocalStorage`. |
-| `IServiceCollection AddSessionLowDbAsync<T>(this IServiceCollection services, string keyname, ServiceLifetime lifetime = ServiceLifetime.Scoped, Action<BrowserStorageOptions>? configureStorage = null, bool enableBackup = false)` | Registers an asynchronous `LowDbAsync<T>` backed by the browser's session storage, and registers session storage services via `AddSessionStorage`. |
+| `IServiceCollection AddLocalLowDbAsync<T>(this IServiceCollection services, string keyname, ServiceLifetime lifetime = ServiceLifetime.Scoped, Action<BrowserStorageOptions>? configureStorage = null, bool enableBackup = false, bool autoFlushOnDispose = false)` | Registers an asynchronous `LowDbAsync<T>` backed by the browser's local storage, and registers local storage services via `AddLocalStorage`. |
+| `IServiceCollection AddSessionLowDbAsync<T>(this IServiceCollection services, string keyname, ServiceLifetime lifetime = ServiceLifetime.Scoped, Action<BrowserStorageOptions>? configureStorage = null, bool enableBackup = false, bool autoFlushOnDispose = false)` | Registers an asynchronous `LowDbAsync<T>` backed by the browser's session storage, and registers session storage services via `AddSessionStorage`. |
 
 ### Parameters
 
@@ -97,6 +97,7 @@ instances. Each method also registers the required `D20Tek.Blazor.BrowserStorage
 | `lifetime` | The service lifetime for the `LowDbAsync<T>` registration. Defaults to `ServiceLifetime.Scoped`. |
 | `configureStorage` | Optional configuration callback for the underlying storage service, including `BrowserStorageOptions.JsonOptions` used to serialize and deserialize the document. |
 | `enableBackup` | When `true`, composes a `BackupStorageAdapter<T>`/`BackupStorageAdapterAsync<T>` (from `D20Tek.LowDb.Adapters`) around the primary adapter, targeting a sibling `<keyname>.bak` storage key. The previous value is copied to the backup key before each write, and reads fall back to that key when the primary key is missing or fails to deserialize. |
+| `autoFlushOnDispose` | When `true`, the registered `LowDbAsync<T>` persists any pending unsaved changes when the container disposes it asynchronously. Note that this requires the container to dispose the service asynchronously; a scope disposed synchronously will not flush. |
 
 ### Example
 

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Release v1.4.4
+
+### Added
+
+- Change notification support on the core databases. `LowDb<T>` and `LowDbAsync<T>` now expose an `event EventHandler<DocumentChangedEventArgs<T>>? Changed` that is raised after the document has been successfully persisted, by either an explicit `Write` or an `Update` with auto-save enabled. The new `DocumentChangedEventArgs<T>` type carries the persisted document through its `Document` property. The event is not raised when the storage write fails or when `Update` is called with `autoSave: false`, and handlers are invoked after the internal lock or semaphore is released so they can safely call back into the database instance.
+- `IAsyncDisposable` and `FlushAsync` support for `LowDbAsync<T>`. The class now implements `IAsyncDisposable` alongside the existing `IDisposable`, and adds a `FlushAsync` method that aliases `Write` for clearer batched-update call sites. A new `HasPendingChanges` property reports whether the document has unsaved changes from `Update(..., autoSave: false)`.
+- Opt-in auto-flush on asynchronous disposal. `LowDbAsync<T>` gained an `autoFlushOnDispose` constructor parameter that causes `DisposeAsync` to persist pending unsaved changes before releasing resources, raising `Changed` when it does. The option defaults to `false`, and is plumbed through `LowDbBuilder.WithAutoFlushOnDispose()`, `LowDbFactory.CreateJsonLowDbAsync`, the `AddLowDbAsync` dependency injection extension, and the `AddLocalLowDbAsync`/`AddSessionLowDbAsync` browser extensions. The synchronous `Dispose()` never flushes, since persisting requires awaiting the storage adapter.
+
+### Changed
+
+- Updated package references to the newest versions.
+
 ## Release v1.4.3
 
 ### Added

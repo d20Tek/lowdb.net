@@ -23,6 +23,14 @@ public class LowDb<T>(IStorageAdapter<T> storageAdapter, T? data = null) where T
     private bool _isLoaded = data != null;
 
     /// <summary>
+    /// Occurs after the document has been successfully persisted to the underlying storage
+    /// adapter, either through <see cref="Write"/> or through <see cref="Update"/> with
+    /// auto-save enabled. Handlers are invoked after the internal lock has been released, so
+    /// they may safely call back into this database instance.
+    /// </summary>
+    public event EventHandler<DocumentChangedEventArgs<T>>? Changed;
+
+    /// <summary>
     /// Reads the document from the underlying storage adapter and replaces the in-memory
     /// state with the loaded value. When the store is empty, a new empty document is used.
     /// </summary>
@@ -43,6 +51,8 @@ public class LowDb<T>(IStorageAdapter<T> storageAdapter, T? data = null) where T
         {
             WriteCore();
         }
+
+        RaiseChanged();
     }
 
     /// <summary>
@@ -84,7 +94,14 @@ public class LowDb<T>(IStorageAdapter<T> storageAdapter, T? data = null) where T
                 WriteCore();
             }
         }
+
+        if (autoSave is true)
+        {
+            RaiseChanged();
+        }
     }
+
+    private void RaiseChanged() => Changed?.Invoke(this, new DocumentChangedEventArgs<T>(_data));
 
     private void ReadCore() => _data = _storageAdapter.Read() ?? new T();
 

@@ -122,5 +122,43 @@ public class LowDbBuilderTests
         db.Get().Entities.Should().BeEmpty();
     }
 
+    [TestMethod]
+    public async Task BuildAsync_WithAutoFlushOnDispose_FlushesPendingChangesOnDispose()
+    {
+        // arrange
+        var builder = new LowDbBuilder()
+            .UseInMemoryDatabase()
+            .WithAutoFlushOnDispose();
+        var db = builder.BuildAsync<TestDocument>();
+        await db.Update(
+            x => x.Entities.Add(new TestEntity { Id = 1, Name = "Test" }),
+            autoSave: false,
+            token: TestContext.CancellationToken);
+
+        // act
+        await db.DisposeAsync();
+
+        // assert
+        db.HasPendingChanges.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public async Task BuildAsync_WithoutAutoFlushOnDispose_LeavesPendingChangesOnDispose()
+    {
+        // arrange
+        var builder = new LowDbBuilder().UseInMemoryDatabase();
+        var db = builder.BuildAsync<TestDocument>();
+        await db.Update(
+            x => x.Entities.Add(new TestEntity { Id = 1, Name = "Test" }),
+            autoSave: false,
+            token: TestContext.CancellationToken);
+
+        // act
+        await db.DisposeAsync();
+
+        // assert
+        db.HasPendingChanges.Should().BeTrue();
+    }
+
     public TestContext TestContext { get; set; } = default!;
 }

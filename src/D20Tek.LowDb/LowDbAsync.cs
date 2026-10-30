@@ -16,13 +16,39 @@
 /// An optional pre-loaded document. When supplied, the database treats it as the current
 /// state and skips the initial read from the storage adapter.
 /// </param>
-public class LowDbAsync<T>(IStorageAdapterAsync<T> storageAdapter, T? data = null) : IDisposable
+/// <param name="autoFlushOnDispose">
+/// When <see langword="true"/>, <see cref="DisposeAsync"/> persists any pending unsaved
+/// changes before releasing resources. Defaults to <see langword="false"/> so that disposal
+/// never performs unexpected writes.
+/// </param>
+public class LowDbAsync<T>(
+    IStorageAdapterAsync<T> storageAdapter,
+    T? data = null,
+    bool autoFlushOnDispose = false) : IDisposable, IAsyncDisposable
     where T : class, new()
 {
     private readonly IStorageAdapterAsync<T> _storageAdapter = storageAdapter;
     private readonly SemaphoreSlim _gate = new(1, 1);
+    private readonly bool _autoFlushOnDispose = autoFlushOnDispose;
     private T _data = data ?? new();
     private bool _isLoaded = data != null;
+    private bool _isDirty = false;
+    private bool _isDisposed = false;
+
+    /// <summary>
+    /// Gets a value indicating whether the in-memory document has changes that have not yet
+    /// been persisted to the underlying storage adapter. Set by calling <see cref="Update"/>
+    /// with auto-save disabled, and cleared by any successful write.
+    /// </summary>
+    public bool HasPendingChanges => _isDirty;
+
+    /// <summary>
+    /// Occurs after the document has been successfully persisted to the underlying storage
+    /// adapter, either through <see cref="Write"/> or through <see cref="Update"/> with
+    /// auto-save enabled. Handlers are invoked after the internal semaphore has been released,
+    /// so they may safely call back into this database instance.
+    /// </summary>
+    public event EventHandler<DocumentChangedEventArgs<T>>? Changed;
 
     /// <summary>
     /// Asynchronously reads the document from the underlying storage adapter and replaces the
@@ -59,7 +85,18 @@ public class LowDbAsync<T>(IStorageAdapterAsync<T> storageAdapter, T? data = nul
         {
             _gate.Release();
         }
+
+        RaiseChanged();
     }
+
+    /// <summary>
+    /// Asynchronously persists the current in-memory document to the underlying storage
+    /// adapter. This is an alias for <see cref="Write"/> that reads more naturally at the end
+    /// of a batched-update sequence using <see cref="Update"/> with auto-save disabled.
+    /// </summary>
+    /// <param name="token">A token used to observe cancellation requests.</param>
+    /// <returns>A task that completes when the write operation has finished.</returns>
+    public async Task FlushAsync(CancellationToken token = default) => await Write(token);
 
     /// <summary>
     /// Asynchronously gets the current in-memory document, loading it from storage on first
@@ -108,28 +145,85 @@ public class LowDbAsync<T>(IStorageAdapterAsync<T> storageAdapter, T? data = nul
             {
                 await WriteCore(token);
             }
+            else
+            {
+                _isDirty = true;
+            }
         }
         finally
         {
             _gate.Release();
         }
+
+        if (autoSave is true)
+        {
+            RaiseChanged();
+        }
     }
+
+    private void RaiseChanged() => Changed?.Invoke(this, new DocumentChangedEventArgs<T>(_data));
 
     /// <summary>
     /// Releases the resources used by this instance, including the internal synchronization
-    /// primitive that guards concurrent access.
+    /// primitive that guards concurrent access. This synchronous overload never flushes
+    /// pending changes; use <see cref="DisposeAsync"/> when auto-flush behavior is required.
     /// </summary>
     public void Dispose()
     {
+        if (_isDisposed) return;
+
+        _isDisposed = true;
         _gate.Dispose();
         GC.SuppressFinalize(this);
     }
 
-    private async Task ReadCore(CancellationToken token = default) =>
-        _data = await _storageAdapter.Read(token) ?? new T();
+    /// <summary>
+    /// Asynchronously releases the resources used by this instance. When the database was
+    /// created with auto-flush enabled and the document has pending unsaved changes, those
+    /// changes are persisted first and the <see cref="Changed"/> event is raised.
+    /// </summary>
+    /// <returns>A task that completes when the flush (if any) and cleanup have finished.</returns>
+    public async ValueTask DisposeAsync()
+    {
+        if (_isDisposed) return;
 
-    private async Task WriteCore(CancellationToken token = default) =>
+        _isDisposed = true;
+        var flushed = false;
+
+        if (_autoFlushOnDispose && _isDirty)
+        {
+            await _gate.WaitAsync();
+            try
+            {
+                await WriteCore();
+                flushed = true;
+            }
+            finally
+            {
+                _gate.Release();
+            }
+        }
+
+        if (flushed)
+        {
+            RaiseChanged();
+        }
+
+        _gate.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
+    private async Task ReadCore(CancellationToken token = default)
+    {
+        _data = await _storageAdapter.Read(token) ?? new T();
+        _isDirty = false;
+    }
+
+    private async Task WriteCore(CancellationToken token = default)
+    {
         await _storageAdapter.Write(_data, token);
+        _isDirty = false;
+    }
 
     private async Task EnsureDatabaseLoaded(CancellationToken token = default)
     {
