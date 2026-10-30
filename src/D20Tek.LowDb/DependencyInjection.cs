@@ -94,13 +94,18 @@ public static class DependencyInjection
     /// <c>.bak</c> file before each write, and reads fall back to that backup when the
     /// primary file is missing or contains invalid JSON.
     /// </param>
+    /// <param name="autoFlushOnDispose">
+    /// When <see langword="true"/>, the container disposing the database asynchronously
+    /// persists any pending unsaved changes before releasing resources.
+    /// </param>
     /// <returns>The same service collection so calls can be chained.</returns>
     public static IServiceCollection AddLowDbAsync<T>(
         this IServiceCollection services,
         string filename,
         ServiceLifetime lifetime = ServiceLifetime.Singleton,
         JsonSerializerOptions? serializerOptions = null,
-        bool enableBackup = false)
+        bool enableBackup = false,
+        bool autoFlushOnDispose = false)
         where T : class, new()
     {
         ServiceDescriptor descriptor = new(
@@ -114,7 +119,7 @@ public static class DependencyInjection
                         adapter, new JsonFileAdapterAsync<T>(filename + ".bak", serializerOptions));
                 }
 
-                return new LowDbAsync<T>(adapter);
+                return new LowDbAsync<T>(adapter, autoFlushOnDispose: autoFlushOnDispose);
             },
             lifetime);
         services.Add(descriptor);

@@ -17,6 +17,7 @@ public class LowDbBuilder
     private bool _useMemoryAdapter = false;
     private JsonSerializerOptions? _serializerOptions;
     private bool _enableBackup = false;
+    private bool _autoFlushOnDispose = false;
 
     /// <summary>
     /// Gets the service lifetime that dependency injection registrations should use for the
@@ -90,6 +91,19 @@ public class LowDbBuilder
     }
 
     /// <summary>
+    /// Enables auto-flush on asynchronous disposal. When enabled, disposing the resulting
+    /// <see cref="LowDbAsync{T}"/> with <c>await using</c> persists any pending unsaved
+    /// changes before releasing resources. Has no effect on the synchronous
+    /// <see cref="LowDb{T}"/> built by <see cref="Build{T}"/>.
+    /// </summary>
+    /// <returns>The same builder instance so calls can be chained.</returns>
+    public LowDbBuilder WithAutoFlushOnDispose()
+    {
+        _autoFlushOnDispose = true;
+        return this;
+    }
+
+    /// <summary>
     /// Sets the service lifetime used when the database is registered with a dependency
     /// injection container.
     /// </summary>
@@ -158,6 +172,6 @@ public class LowDbBuilder
             }
         }
 
-        return new(adapter);
+        return new(adapter, autoFlushOnDispose: _autoFlushOnDispose);
     }
 }

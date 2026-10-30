@@ -29,13 +29,18 @@ public static class DependencyInjection
     /// before each write, and reads fall back to that backup key when the primary key is
     /// missing or its value fails to deserialize.
     /// </param>
+    /// <param name="autoFlushOnDispose">
+    /// When <see langword="true"/>, the container disposing the database asynchronously
+    /// persists any pending unsaved changes before releasing resources.
+    /// </param>
     /// <returns>The same service collection so calls can be chained.</returns>
     public static IServiceCollection AddLocalLowDbAsync<T>(
         this IServiceCollection services,
         string keyname,
         ServiceLifetime lifetime = ServiceLifetime.Scoped,
         Action<BrowserStorageOptions>? configureStorage = null,
-        bool enableBackup = false)
+        bool enableBackup = false,
+        bool autoFlushOnDispose = false)
         where T : class, new()
     {
         services.AddLocalStorage(configureStorage, lifetime);
@@ -52,7 +57,7 @@ public static class DependencyInjection
                         adapter, new LocalStorageAdapterAsync<T>(keyname + ".bak", localStorage));
                 }
 
-                return new LowDbAsync<T>(adapter);
+                return new LowDbAsync<T>(adapter, autoFlushOnDispose: autoFlushOnDispose);
             },
             lifetime);
         services.Add(descriptor);
@@ -77,13 +82,18 @@ public static class DependencyInjection
     /// before each write, and reads fall back to that backup key when the primary key is
     /// missing or its value fails to deserialize.
     /// </param>
+    /// <param name="autoFlushOnDispose">
+    /// When <see langword="true"/>, the container disposing the database asynchronously
+    /// persists any pending unsaved changes before releasing resources.
+    /// </param>
     /// <returns>The same service collection so calls can be chained.</returns>
     public static IServiceCollection AddSessionLowDbAsync<T>(
         this IServiceCollection services,
         string keyname,
         ServiceLifetime lifetime = ServiceLifetime.Scoped,
         Action<BrowserStorageOptions>? configureStorage = null,
-        bool enableBackup = false)
+        bool enableBackup = false,
+        bool autoFlushOnDispose = false)
         where T : class, new()
     {
         services.AddSessionStorage(configureStorage, lifetime);
@@ -100,7 +110,7 @@ public static class DependencyInjection
                         adapter, new SessionStorageAdapterAsync<T>(keyname + ".bak", sessionStorage));
                 }
 
-                return new LowDbAsync<T>(adapter);
+                return new LowDbAsync<T>(adapter, autoFlushOnDispose: autoFlushOnDispose);
             },
             lifetime);
         services.Add(descriptor);

@@ -21,6 +21,7 @@ pattern, and browser storage for Blazor apps. For the conceptual background, see
 * [10. Using browser storage in Blazor](#10-using-browser-storage-in-blazor)
 * [11. Testing with the in-memory adapter](#11-testing-with-the-in-memory-adapter)
 * [12. Reacting to changes with events](#12-reacting-to-changes-with-events)
+* [13. Flushing and disposing the async database](#13-flushing-and-disposing-the-async-database)
 * [Next steps](#next-steps)
 
 ## Prerequisites
@@ -345,6 +346,47 @@ A few rules worth knowing:
 * Handlers run after the internal lock or semaphore is released, so a handler can safely call back
   into the same database instance.
 * `e.Document` is the live in-memory document, not a copy. Treat it as read-only inside handlers.
+
+## 13. Flushing and disposing the async database
+
+When you batch several updates with `autoSave: false`, `FlushAsync` makes the final save explicit
+and easier to read than a bare `Write`:
+
+```csharp
+await db.Update(x => x.Tasks.Add(first), autoSave: false);
+await db.Update(x => x.Tasks.Add(second), autoSave: false);
+
+await db.FlushAsync();
+```
+
+`FlushAsync` is a straight alias for `Write`, so it always writes and always raises `Changed`, even
+if nothing is pending. To check for unsaved work first, use the `HasPendingChanges` property.
+
+`LowDbAsync<T>` implements `IAsyncDisposable`, and can optionally flush pending changes for you as
+the database is disposed. This is opt-in, so disposal never writes unexpectedly:
+
+```csharp
+await using var db = LowDbFactory.CreateJsonLowDbAsync<TasksDocument>(
+    "my-tasks.json", autoFlushOnDispose: true);
+
+// No explicit save needed; the pending change is written when the scope exits.
+await db.Update(x => x.Tasks.Add(newTask), autoSave: false);
+```
+
+The same opt-in is available on the builder and the dependency injection extensions:
+
+```csharp
+services.AddLowDbAsync<TasksDocument>(b => b
+    .UseFileDatabase("my-tasks.json")
+    .WithAutoFlushOnDispose());
+```
+
+Two things to keep in mind:
+
+* Auto-flush runs only on `DisposeAsync`, so use `await using` (or an async DI scope). The
+  synchronous `Dispose()` never flushes, because writing requires awaiting the storage adapter.
+* Disposal writes only when there are actually pending changes, so disposing a clean database
+  performs no I/O.
 
 ## Next steps
 
